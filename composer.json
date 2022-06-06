@@ -1,0 +1,19 @@
+{
+    "name": "pijush/wp-todo-by-aavoya",
+    "description": "Distributed todo app based on wordpress cms",
+    "type": "project",
+    "license": "GPL 2 or later",
+    "authors": [
+        {
+            "name": "Pijush Gupta"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Wptba\\": "wptba/"
+        }
+    },
+    "require": {
+        "firebase/php-jwt": "^6.2"
+    }
+}

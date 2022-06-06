@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.header{
+	font-family: 'Lobster Two';
+}
+#wpcontent{
+	padding-left: 0;
+}
+.app-body{
+	font-family: 'Source Sans Pro';
+}
