@@ -24,6 +24,9 @@
 										>
 									</div>
 								</li>
+								<li class="flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2 ">
+									<div @click="$emit('logout')">Logout</div>
+								</li>
 							</ul>
 						</div>
 				</div>

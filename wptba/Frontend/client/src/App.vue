@@ -87,6 +87,7 @@ function logout(){
 	<Login 
 	v-if="dealUser == 0" 
 	@toggleComponent="toggleComponent" 
+	@logout="logout"
 	v-bind:Logo="logo"
 	/>
 	<Register 

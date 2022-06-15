@@ -26,7 +26,7 @@
 				<div class="flex flex-row justify-between">
 					<div>Manually Approval of new Accounts</div>
 					<div>
-						<input type="checkbox" v-model="autoApproveUser" @change="setApproveUser"/>
+						<input type="checkbox" v-model="autoApproveUser" @click="setApproveUser"/>
 					</div>
 				</div>
 			</li>
@@ -36,7 +36,7 @@
 </div>
 </template>
 <script setup>
-import {ref, watch} from 'vue';
+import {ref, watch, onMounted} from 'vue';
 const key 				= ref('');
 const autoLogOut	= ref('');
 const autoApproveUser = ref(false);
@@ -129,7 +129,9 @@ function getApproveUser(){
 	})
 	.catch(err => console.log(err));
 }
-function setApproveUser(){
+function setApproveUser() {
+	autoApproveUser.value = !autoApproveUser.value;
+	console.log('setting', autoApproveUser.value);
 	const data = new FormData()
 	data.append('action', 'setAauWptba');
 	data.append('wptba_backend_nonce', wptba_backend_nonce);
@@ -141,15 +143,17 @@ function setApproveUser(){
 	})
 	.then(response => response.json())
 	.then(response => {
-		//console.log(response);
+		console.log('getting',response);
 	})
 	.catch(err => console.log(err));
 }
 
+onMounted(() => {
+	getKey();
+	getAutoLogOut();
+	getApproveUser();
+});
 
-getKey();
-getAutoLogOut();
-getApproveUser();
 
 
 

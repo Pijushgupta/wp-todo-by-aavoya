@@ -2,11 +2,12 @@
 import {ref } from 'vue';
 import Header from './components/Header.vue';
 import Settings from './components/Settings.vue';
+import Accounts from './components/Accounts.vue';
 
 const tabs = ref(
 	[
 		{name:'Settings'},
-		{name:'Approve Accounts'}
+		{name:'Pending Accounts'}
 	]
 );
 const tabState = ref(0);
@@ -34,7 +35,9 @@ const tabState = ref(0);
 						<li v-show="tabState == 0">
 							<Settings />
 						</li>
-						<li v-show="tabState == 1">Approve Accounts</li>
+						<li v-show="tabState == 1">
+							<Accounts/>
+						</li>
 					</ul>
 				</div>
 				

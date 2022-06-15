@@ -30,6 +30,7 @@ use Wptba\Init\Aau;
 use Wptba\Backend\KeyAjax;
 use Wptba\Backend\AloAjax;
 use Wptba\Backend\AauAjax;
+
 use Wptba\Backend\Ui;
 use Wptba\Frontend\User;
 use Wptba\Frontend\Posts;
@@ -48,6 +49,7 @@ add_action('plugins_loaded', function () {
 	KeyAjax::init();
 	AloAjax::init();
 	AauAjax::init();
+	Wptba\Backend\User::activate();
 	Ui::activate();
 
 	//Frontend 

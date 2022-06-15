@@ -4,34 +4,34 @@ namespace Wptba\Frontend;
 
 if (!defined('ABSPATH')) exit;
 
-
-use Wptba\Frontend\Template;
-
+use Wptba\Frontend\Enqueue;
 
 class Shortcode
 {
-
 	private static $globallyScoopedClassName = 'Wptba\Frontend\Shortcode';
-
-
+	
 	public static function activate(){
-		add_shortcode('wptba', array(self::$globallyScoopedClassName, 'init'));
 		
+		add_filter('template_include', array(self::$globallyScoopedClassName, 'init'));
 	}
 
+	public static function init($template){
+		global $post;
 
-	public static function init(){
-		if (!is_admin()) {
-
-		add_filter('template_include', array(self::$globallyScoopedClassName, 'templateInclude'));
+		if (!is_admin() && str_contains($post->post_content,'[wptba]')) {
+			/**
+			 * Do not remove it from this method, getting triggered from 'template_include'
+			 * removing it and placing somewhere else will cause wordpres to break
+			 */
+			Enqueue::do();
 			
+			$template = dirname(__FILE__) . '/Template.php';
+
+			return $template;
+			
+		}else{
+			return $template;
 		}
 	}
 
-	public static function templateInclude($template){
-		
-		$template = dirname(__FILE__) . '/template.php';
-		
-		return $template;
-	}
 }

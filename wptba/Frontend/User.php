@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 
 use Wptba\Common\Auth;
 use Wptba\Common\Officer;
+use Wptba\Frontend\TemplateEmail;
 
 
 class User
@@ -26,8 +27,15 @@ class User
 		add_action('wp_ajax_nopriv_wptbaDownloadDarkMode', array(self::$globalNamespace, 'wptbaDownloadDarkMode'));
 		add_action('wp_ajax_wptbaDownloadDarkMode', array(self::$globalNamespace, 'wptbaDownloadDarkMode'));
 
+		add_action('wp_ajax_nopriv_wptbaCheckAvailableUsername', array(self::$globalNamespace, 'wptbaCheckAvailableUsername'));
+		add_action('wp_ajax_wptbaCheckAvailableUsername', array(self::$globalNamespace, 'wptbaCheckAvailableUsername'));
+
 		add_action('wp_ajax_nopriv_wptbaRegister', array(self::$globalNamespace, 'register'));
 		add_action('wp_ajax_wptbaRegister', array(self::$globalNamespace, 'register'));
+
+
+		add_action('admin_post_nopriv_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
+		add_action('admin_post_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
 	}
 
 	/**
@@ -257,14 +265,200 @@ class User
 		}
 	}
 
+	public static function CheckAvailableUsername($userName)
+	{
+		$userLogins = get_users(array('fields' => 'user_login'));
+		foreach ($userLogins as $userLogin) {
+			if ($userLogin == $userName) {
+				return false;
+			}
+		}
+		return true;
+	}
 
+	public static function wptbaCheckAvailableUsername()
+	{
 
-	//TODO: register
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) wp_die();
+
+		if (!sanitize_text_field($_POST['username'])) wp_die();
+
+		if (self::CheckAvailableUsername(sanitize_text_field($_POST['username']))) {
+			echo json_encode(true);
+		} else {
+			echo json_encode(false);
+		}
+		wp_die();
+	}
+
 	public static function register()
 	{
 		/**
 		 * Verifying Nonce
 		 */
 		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) wp_die();
+
+		$name 			= sanitize_text_field($_POST['name']);
+		$userName 	= sanitize_text_field($_POST['username']);
+		$userEmail 	= sanitize_email($_POST['email']);
+
+		if (!$name || !$userName || !$userEmail) wp_die();
+
+		/** 
+		 * return type
+		 * 0 : Username is not available
+		 * 1 : email is not available
+		 * 2 : everything is ok and email verification initiated
+		 */
+		if (self::CheckAvailableUsername($userName) === false) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		if (get_user_by('email', $userEmail) != false) {
+			echo json_encode(1);
+			wp_die();
+		}
+
+		if (get_option('wptba_encryption_key', null) != null) {
+			$key = sanitize_text_field(get_option('wptba_encryption_key'));
+		} else {
+			wp_die();
+		}
+
+		$authObject = new Auth($key, 1);
+		$authObject->setData(array(
+			'name' => $name,
+			'userName' => $userName,
+			'userEmail' => $userEmail
+		));
+		$tokenisedLinkData  = $authObject->encode();
+
+		$link = admin_url('admin-post.php') . '?' . 'action=wptba_verify_email&token=' . $tokenisedLinkData;
+		wp_mail(
+			$userEmail,
+			'Verify your email',
+			'<div><p style="display:block">Please click on the link/button to verify your email address. </p><br>
+			<a href="' . $link . '" style="background-color:#3b82f6; padding:10px 20px; color:white; text-transform:capitalize; border-radius: 4px; text-decoration:none display:inline-block;">Verify your email</a>
+			<p>Please Ignore this mail if you have not registered with us.</p>
+			</div>',
+			array('Content-Type: text/html; charset=UTF-8')
+		);
+		echo json_encode(2);
+		wp_die();
+	}
+
+	public static function wptba_verify_email()
+	{
+
+		if (get_option('wptba_encryption_key', null) != null) {
+			$key = sanitize_text_field(get_option('wptba_encryption_key'));
+		} else {
+			wp_die();
+		}
+		$authObject = new Auth();
+		$registrationData = $authObject->decode($_REQUEST['token'], $key);
+		if ($registrationData == false) {
+			TemplateEmail::linkExpired();
+			die;
+		}
+		$registrationData = $registrationData['data'];
+
+		$name 			= sanitize_text_field($registrationData->name);
+		$userName 	= sanitize_text_field($registrationData->userName);
+		$userEmail 	= sanitize_email($registrationData->userEmail);
+
+		if (get_option('wptba_aau', null) == null) return;
+
+		$aau = unserialize(get_option('wptba_aau'));
+		$aau = rest_sanitize_boolean($aau['aau']);
+
+		/**
+		 * Save user Detail as Post
+		 */
+		if ($aau == true) {
+			self::createUserAsPost($name, $userName, $userEmail);
+			TemplateEmail::pendingApproval();
+			die;
+		}
+		/**
+		 * Save user Detail as User
+		 */
+		if ($aau == false) {
+			$status = self::createUser($name, $userName, $userEmail);
+			if ($status === false) {
+				TemplateEmail::linkExpired();
+				die;
+			}
+
+			TemplateEmail::approval();
+			wp_mail(
+				$userEmail,
+				'Login Credentials',
+				'Your login credentials are:</br>
+				<p>Email: ' . $userEmail . '</p>
+				<p>Password: ' . $status . '</p>',
+				array('Content-Type: text/html; charset=UTF-8')
+			);
+			die;
+		}
+	}
+
+	public static function createUserAsPost($name, $userName, $userEmail)
+	{
+		$userAsPost = get_posts(array(
+			'post_type' => 'wp_todo_user',
+			'post_status' => 'publish'
+		));
+		if (!empty($userAsPost)) {
+			foreach ($userAsPost as $user) {
+				if ($user->post_title == $userEmail) {
+					return;
+				}
+			}
+		}
+		$post = array(
+			'post_title' => $userEmail,
+			'post_type' => 'wp_todo_user',
+			'post_status' => 'publish',
+			'post_author' => 1
+		);
+		$postID = wp_insert_post($post);
+		if ($postID) {
+			update_post_meta($postID, 'wptba_user_post_meta', array(
+				'name' => $name,
+				'userName' => $userName,
+				'userEmail' => $userEmail,
+
+			));
+		}
+	}
+
+	public static function createUser($name, $userName, $userEmail)
+	{
+
+		if (self::CheckAvailableUsername($userName) == false) return false;
+
+		if (get_user_by('email', $userEmail) != false) return false;
+
+		$userPassword = wp_generate_password();
+
+		$userID = wp_insert_user(array(
+			'user_login' 	=> $userName,
+			'user_pass' 	=> $userPassword,
+			'user_email' 	=> $userEmail,
+			'first_name' 	=> $name,
+			'role' 				=> 'todoer'
+		));
+
+		if (gettype($userID) != 'integer') return false;
+
+
+		add_user_meta($userID, 'wptba_user_meta', serialize(array(
+			'bio' => '',
+			'dark_mode' => true,
+		)));
+
+		return $userPassword;
 	}
 }

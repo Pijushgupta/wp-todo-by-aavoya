@@ -110,7 +110,6 @@ class Posts
 		$userID = Officer::validateRequest($_POST);
 		if (gettype($userID) != 'integer') wp_die();
 
-
 		$post_id = intval($_POST['post_id']);
 
 		$meta = get_post_meta($post_id, 'wp_todo_board_meta', true);

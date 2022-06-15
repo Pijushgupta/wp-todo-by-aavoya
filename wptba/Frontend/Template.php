@@ -1,21 +1,17 @@
-<?php 
-/**
- * Template name: Vue Template
- */
-use Wptba\Frontend\Enqueue;
-?>
+
 <!doctype html>
 <html lang="en">
 <head>
-<title>Wp Todo - by Aavoya.co</title>
-<link rel="stylesheet" href="<?php echo Enqueue::style(); ?>">
-<link rel="stylesheet" href="<?php echo Enqueue::font(); ?>">
-
+<?php wp_head(); ?>
+<script>
+				var wptba_ajax_url = '<?php echo admin_url('admin-ajax.php'); ?>';
+				var wptba_nonce = '<?php echo wp_create_nonce('wptba_nonce'); ?>';
+			</script>
 </head>
 <body>
 <div class='wptodobyaavoya'>
 </div>
-<script src="<?php echo Enqueue::script(); ?>"></script>
+<?php wp_footer();?>
 </body>
 </html>
 

@@ -4,13 +4,64 @@ const props = defineProps({Logo:String});
 const companyLogo = ref(props.Logo ? props.Logo : '' );
 const name				= ref('');
 const email				= ref('');
-const username		= ref('');
+const username = ref('');
+const error = ref(false);
 
-function submitRegister(){
+function submitRegister() {
+	
+	if (name.value == '' || email.value == '' || username.value == '') {
+		error.value = 'Please fill all the fields';
+		return;
+	} else {
+		error.value = false;
+	}
 
+	const data = new FormData();
+	data.append('action', 'wptbaRegister');
+	data.append('wptba_nonce', wptba_nonce);
+	
+	data.append('name', name.value);
+	data.append('email', email.value);
+	data.append('username', username.value);
+
+	fetch(wptba_ajax_url, {
+		method: 'POST',
+		body: data
+	})
+		.then(response => response.json())
+		.then(response => {
+			if (response == '2' || response == 2) {
+				error.value = 'Registration Successful';
+			}
+		})
+		.catch(error => console.log(error));
+	
 }
 
-function getAvilableUsername(){
+function getAvilableUsername() {
+	if (username.value == '') return;
+	error.value = false;
+	const data = new FormData();
+	data.append('action', 'wptbaCheckAvailableUsername');
+	data.append('wptba_nonce', wptba_nonce);
+	data.append('username', username.value);
+
+	fetch(wptba_ajax_url, {
+		method: 'POST',
+		body: data
+	})
+
+		.then(response => response.json())
+		.then(response => { 
+			if (response === true) {
+				error.value = 'Username is available';
+			}
+			if (response === false) {
+				error.value = 'Username is not available';
+			}
+		})
+		.catch(error => console.log(error));
+
 
 }
 
@@ -31,12 +82,12 @@ function getAvilableUsername(){
 			<label for="username" class="block text-base mb-1  text-gray-400 tracking-tight">Username</label>
 			<div class="flex flex-row items-center mb-3 ">
 				<input  id="username" type="text"  placeholder="username"  class="w-full block px-4 py-2  rounded-l border border-r-0 focus:outline-0  focus:border-blue-600   " required v-model="username"/>
-				<button @click.prevent="getAvilableUsername" class=" border border-blue-600 border-r-0 bg-blue-700 py-2 px-6 text-white rounded-r font-semibold">Check</button>
+				<a @click.prevent="getAvilableUsername" class=" border border-blue-600 border-r-0 bg-blue-700 py-2 px-6 text-white rounded-r font-semibold">Check</a>
 			</div>
 			
 
 			<div class="flex justify-center ">
-				<p v-show="error" class="text-gray-400 text-base tracking-tight py-2 mb-1">User do no exists or Incorrect Password</p>
+				<p v-show="error" class="text-gray-400 text-base tracking-tight py-2 mb-1">{{error}}</p>
 			</div>
 			<div class="flex justify-between items-center">
 				<div class="flex flex-row">

@@ -5,6 +5,7 @@
 		<Header 
 		v-if="userProfile" 
 		@tooglemode="toogleDarkMode" 
+		@logout="$emit('logout')"
 		v-bind:userProfile="userProfile" 
 		v-bind:darkMode="darkMode"
 		/>
