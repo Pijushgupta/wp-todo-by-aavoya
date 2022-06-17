@@ -33,9 +33,11 @@ class User
 		add_action('wp_ajax_nopriv_wptbaRegister', array(self::$globalNamespace, 'register'));
 		add_action('wp_ajax_wptbaRegister', array(self::$globalNamespace, 'register'));
 
-
 		add_action('admin_post_nopriv_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
 		add_action('admin_post_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
+
+		add_action('wp_ajax_nopriv_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));
+		add_action('wp_ajax_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));
 	}
 
 	/**
@@ -460,5 +462,44 @@ class User
 		)));
 
 		return $userPassword;
+	}
+
+	public static function changePassword()
+	{
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) wp_die();
+
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		if (!$_POST['oldPass']) wp_die();
+		$oldPass = sanitize_text_field($_POST['oldPass']);
+
+
+		if (!$_POST['newPass']) wp_die();
+		$newPass = sanitize_text_field($_POST['newPass']);
+
+
+
+		if ($oldPass)
+
+
+
+			$user = get_user_by('ID', $userID);
+		if ($user == false) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		$passWordHash = $user->data->user_pass;
+
+
+
+
+
+		$oldPassword = sanitize_text_field($_POST['oldPassword']);
+		$newPassword = sanitize_text_field($_POST['newPassword']);
 	}
 }

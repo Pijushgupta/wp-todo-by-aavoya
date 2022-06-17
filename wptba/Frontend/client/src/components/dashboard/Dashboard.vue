@@ -5,6 +5,7 @@
 		<Header 
 		v-if="userProfile" 
 		@tooglemode="toogleDarkMode" 
+		@changePass="changePassword = true"
 		@logout="$emit('logout')"
 		v-bind:userProfile="userProfile" 
 		v-bind:darkMode="darkMode"
@@ -21,6 +22,8 @@
 			<Body 
 			v-if="postsToLoad != false && postsToLoad != 'undefined'"
 			v-bind:postsToLoad="postsToLoad"
+			v-bind:changePassword="changePassword"
+			@disablePassDiag="disablePassDiag"
 			/>
 		</div>
 		
@@ -45,7 +48,8 @@ export default{
 			postsToLoad:false,
 			userProfile:false,
 			darkMode:'',
-			userCred : localStorage.getItem('jwt'),
+			userCred: localStorage.getItem('jwt'),
+			changePassword:false,
 		}
 	},
 
@@ -166,6 +170,10 @@ export default{
 		loadBody(id){
 			this.postsToLoad = id;
 		},
+		disablePassDiag() {
+			this.changePassword = false;
+			
+		}
 
 	},
 	mounted(){

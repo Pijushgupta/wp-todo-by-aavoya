@@ -11,8 +11,8 @@
 					</div>
 					<div v-show="showPreference" class="menu absolute top-14 w-56 bg-white dark:bg-gray-900 border dark:border-gray-600 cursor-default rounded-lg font-normal ">
 							<ul>
-								<li class="flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2 ">{{displayName}}</li>
-								<li class="flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2 ">
+								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">{{displayName}}</li>
+								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">
 									<div>Dark Mode</div>
 									<div>
 										<input 
@@ -24,11 +24,14 @@
 										>
 									</div>
 								</li>
-								<li class="flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2 ">
+								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">
+									<div @click="$emit('changePass')">Change Password</div>
+								</li>
+								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">
 									<div @click="$emit('logout')">Logout</div>
 								</li>
 							</ul>
-						</div>
+					</div>
 				</div>
 			</div>
 		</div>

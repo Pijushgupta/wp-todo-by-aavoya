@@ -17799,7 +17799,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       userProfile: '',
       posts: false,
       postsToLoad: false
-    }, _defineProperty(_ref, "userProfile", false), _defineProperty(_ref, "darkMode", ''), _defineProperty(_ref, "userCred", localStorage.getItem('jwt')), _ref;
+    }, _defineProperty(_ref, "userProfile", false), _defineProperty(_ref, "darkMode", ''), _defineProperty(_ref, "userCred", localStorage.getItem('jwt')), _defineProperty(_ref, "changePassword", false), _ref;
   },
   methods: {
     getUserDetails: function getUserDetails() {
@@ -17925,6 +17925,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     loadBody: function loadBody(id) {
       this.postsToLoad = id;
+    },
+    disablePassDiag: function disablePassDiag() {
+      this.changePassword = false;
     }
   },
   mounted: function mounted() {
@@ -17960,14 +17963,19 @@ __webpack_require__.r(__webpack_exports__);
     draggable: (vuedraggable__WEBPACK_IMPORTED_MODULE_0___default())
   },
   props: {
-    postsToLoad: [String, Number, Boolean]
+    postsToLoad: [String, Number, Boolean],
+    changePassword: Boolean
   },
   data: function data() {
     return {
       board: false,
       createDraggable: 0,
       draggbaleGroup: 'draggable-group',
-      userCred: localStorage.getItem('jwt')
+      userCred: localStorage.getItem('jwt'),
+      oldPass: '',
+      newPass: '',
+      newPass2: '',
+      passErrorMessage: false
     };
   },
   methods: {
@@ -18031,6 +18039,44 @@ __webpack_require__.r(__webpack_exports__);
     deleteList: function deleteList(index) {
       if (!window.confirm('Are you sure you want to delete this list?')) return;
       this.board.splice(index, 1);
+    },
+    changePassoword: function changePassoword() {
+      if (this.oldPass == '' || this.newPass == '' || this.newPass2 == '') {
+        this.passErrorMessage = 'Please fill all fields';
+        return;
+      }
+
+      if (this.newPass != this.newPass2) {
+        this.passErrorMessage = 'New passwords do not match';
+        return;
+      }
+
+      var data = new FormData();
+      data.append('jwt', this.userCred);
+      data.append('action', 'wptbaChangePassword');
+      data.append('wptba_nonce', wptba_nonce);
+      data.append('old_password', this.oldPass);
+      data.append('new_password', this.newPass);
+      fetch(wptba_ajax_url, {
+        method: 'POST',
+        body: data
+      }).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        if (response == 'success') {
+          oldPass = false;
+          newPass = false;
+          newPass2 = false;
+          passErrorMessage = 'Password Updated Successfully';
+        }
+
+        if (response == 'failed') {
+          oldPass = false;
+          newPass = false;
+          newPass2 = false;
+          passErrorMessage = 'Old password is incorrect';
+        }
+      });
     }
   },
   mounted: function mounted() {
@@ -18548,7 +18594,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, [_ctx.userProfile ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Header, {
     key: 0,
     onTooglemode: $options.toogleDarkMode,
-    onLogout: _cache[0] || (_cache[0] = function ($event) {
+    onChangePass: _cache[0] || (_cache[0] = function ($event) {
+      return _ctx.changePassword = true;
+    }),
+    onLogout: _cache[1] || (_cache[1] = function ($event) {
       return _ctx.$emit('logout');
     }),
     userProfile: _ctx.userProfile,
@@ -18565,10 +18614,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["posts", "onAddPost", "onDeletePost", "onLoadBody"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.postsToLoad != false && _ctx.postsToLoad != 'undefined' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Body, {
     key: 1,
-    postsToLoad: _ctx.postsToLoad
+    postsToLoad: _ctx.postsToLoad,
+    changePassword: _ctx.changePassword,
+    onDisablePassDiag: $options.disablePassDiag
   }, null, 8
   /* PROPS */
-  , ["postsToLoad"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 2
+  , ["postsToLoad", "changePassword", "onDisablePassDiag"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 2
   /* CLASS */
   );
 }
@@ -18592,16 +18643,25 @@ var _hoisted_1 = {
   "class": "dark:bg-gray-900 w-full p-2"
 };
 var _hoisted_2 = {
-  "class": "flex flex-row flex-wrap"
+  key: 0,
+  "class": "absolute inset-0 w-full flex justify-center items-center z-10 backdrop-blur"
 };
 var _hoisted_3 = {
-  "class": "rounded-lg border border-gray-200 dark:border-gray-800 max-w-xs"
+  "class": "w-72 md:w-1/5 flex flex-col border border-gray-200 dark:border-gray-800 rounded-lg dark:bg-gray-900 bg-gray-50"
 };
 var _hoisted_4 = {
-  "class": "heading border-b border-gray-200 dark:border-gray-800 p-2 py-2 font-semibold text-gray-500 dark:text-gray-400 cursor-move flex justify-between items-center"
+  "class": "flex flex-row justify-between items-center border-b border-gray-200 dark:border-gray-800 px-4 py-2 font-semibold text-gray-500 dark:text-gray-400"
 };
-var _hoisted_5 = ["onUpdate:modelValue"];
-var _hoisted_6 = ["onClick"];
+
+var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "w-1/2"
+}, "Change Password", -1
+/* HOISTED */
+);
+
+var _hoisted_6 = {
+  "class": "w-1/2 flex justify-end"
+};
 
 var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "fill-rule": "evenodd",
@@ -18613,24 +18673,78 @@ var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 
 var _hoisted_8 = [_hoisted_7];
 var _hoisted_9 = {
-  "class": "p-2 pb-1"
+  "class": "flex flex-col px-4 py-2"
 };
-var _hoisted_10 = {
-  "class": "flex flex-row"
-};
-var _hoisted_11 = ["id"];
-var _hoisted_12 = ["onClick"];
+
+var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "changePassOld",
+  "class": "w-full text-gray-500 dark:text-gray-400 py-2"
+}, "Old password", -1
+/* HOISTED */
+);
+
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "changePassNew",
+  "class": "w-full text-gray-500 dark:text-gray-400 py-2"
+}, "New password", -1
+/* HOISTED */
+);
+
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  "for": "changePassNew2",
+  "class": "w-full text-gray-500 dark:text-gray-400 py-2"
+}, "Repeat new password", -1
+/* HOISTED */
+);
+
 var _hoisted_13 = {
-  "class": "border text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 px-2 py-2 mb-1 last:mb-0 rounded cursor-move flex justify-between items-center"
+  "class": "flex flex-row px-4 pb-4 justify-center items-center"
 };
 var _hoisted_14 = {
-  style: {
-    "max-width": "13rem"
-  }
+  "class": "w-1/2 text-gray-500 dark:text-gray-300"
 };
-var _hoisted_15 = ["onClick"];
+var _hoisted_15 = {
+  key: 0
+};
+var _hoisted_16 = {
+  "class": "w-1/2 flex flex-row justify-end"
+};
+var _hoisted_17 = {
+  "class": "flex flex-row flex-wrap"
+};
+var _hoisted_18 = {
+  "class": "rounded-lg border border-gray-200 dark:border-gray-800 max-w-xs"
+};
+var _hoisted_19 = {
+  "class": "heading border-b border-gray-200 dark:border-gray-800 p-2 py-2 font-semibold text-gray-500 dark:text-gray-400 cursor-move flex justify-between items-center"
+};
+var _hoisted_20 = ["onUpdate:modelValue"];
+var _hoisted_21 = ["onClick"];
 
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+  "fill-rule": "evenodd",
+  d: "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z",
+  "clip-rule": "evenodd"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_23 = [_hoisted_22];
+var _hoisted_24 = {
+  "class": "p-2 pb-1"
+};
+var _hoisted_25 = {
+  "class": "flex flex-row"
+};
+var _hoisted_26 = ["id"];
+var _hoisted_27 = ["onClick"];
+var _hoisted_28 = {
+  "class": "border text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 px-2 py-2 mb-1 last:mb-0 rounded cursor-move flex justify-between items-center"
+};
+var _hoisted_29 = ["onDblclick"];
+var _hoisted_30 = ["onClick"];
+
+var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "stroke-linecap": "round",
   "stroke-linejoin": "round",
   d: "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
@@ -18638,12 +18752,12 @@ var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_17 = [_hoisted_16];
-var _hoisted_18 = {
+var _hoisted_32 = [_hoisted_31];
+var _hoisted_33 = {
   "class": "absolute bottom-5 right-5"
 };
 
-var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
+var _hoisted_34 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   "class": "h-6 w-6 stroke-white",
   fill: "none",
@@ -18658,15 +18772,57 @@ var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_20 = [_hoisted_19];
+var _hoisted_35 = [_hoisted_34];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_draggable = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("draggable");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.board, function (item, i) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.changePassword == true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    "class": "h-5 w-5 cursor-pointer",
+    viewBox: "0 0 20 20",
+    fill: "currentColor",
+    onClick: _cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return _ctx.$emit('disablePassDiag');
+    }, ["prevent"]))
+  }, _hoisted_8))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    required: "",
+    id: "changePassOld",
+    "class": "border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded focus:outline-none text-gray-500 dark:text-gray-400",
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $data.oldPass = $event;
+    })
+  }, null, 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.oldPass]]), _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    required: "",
+    id: "changePassNew",
+    "class": "border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded focus:outline-none text-gray-500 dark:text-gray-400",
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $data.newPass = $event;
+    })
+  }, null, 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.newPass]]), _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    required: "",
+    id: "changePassNew2",
+    "class": "border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded focus:outline-none text-gray-500 dark:text-gray-400",
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+      return $data.newPass2 = $event;
+    })
+  }, null, 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.newPass2]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [$data.passErrorMessage ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.passErrorMessage), 1
+  /* TEXT */
+  )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return $options.changePassoword();
+    }, ["prevent"])),
+    "class": "bg-blue-700 dark:bg-blue-700 text-white py-2 px-4 rounded text-center cursor-pointer"
+  }, "Change")])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.board, function (item, i) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       key: i,
       "class": "p-2"
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
       type: "text",
       "onUpdate:modelValue": function onUpdateModelValue($event) {
         return $data.board[i].title = $event;
@@ -18674,7 +18830,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "dark:bg-gray-900 w-full font-semibold"
     }, null, 8
     /* PROPS */
-    , _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.board[i].title]]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+    , _hoisted_20), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.board[i].title]]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "class": "h-5 w-5 cursor-pointer",
       onClick: function onClick($event) {
@@ -18682,22 +18838,22 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       },
       viewBox: "0 0 20 20",
       fill: "currentColor"
-    }, _hoisted_8, 8
+    }, _hoisted_23, 8
     /* PROPS */
-    , _hoisted_6))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    , _hoisted_21))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
       type: "text",
       id: i,
       "class": "border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded-l focus:outline-none w-full"
     }, null, 8
     /* PROPS */
-    , _hoisted_11), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    , _hoisted_26), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
         return $options.addItemToArray(i);
       }, ["prevent"]),
       "class": "border bg-blue-700 text-white py-1 px-3 border-blue-700 rounded-r"
     }, "add", 8
     /* PROPS */
-    , _hoisted_12)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_draggable, {
+    , _hoisted_27)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_draggable, {
       modelValue: $data.board[i].data,
       "onUpdate:modelValue": function onUpdateModelValue($event) {
         return $data.board[i].data = $event;
@@ -18712,9 +18868,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       item: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function (_ref) {
         var element = _ref.element,
             index = _ref.index;
-        return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(element), 1
-        /* TEXT */
-        ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+        return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+          style: {
+            "max-width": "13rem"
+          },
+          onDblclick: function onDblclick($event) {
+            return _ctx.elementTemp = $data.board[i].data[index];
+          }
+        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(element), 41
+        /* TEXT, PROPS, HYDRATE_EVENTS */
+        , _hoisted_29), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
           xmlns: "http://www.w3.org/2000/svg",
           onClick: function onClick($event) {
             return $options.deleteItem(i, index);
@@ -18724,9 +18887,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           viewBox: "0 0 24 24",
           stroke: "currentColor",
           "stroke-width": "2"
-        }, _hoisted_17, 8
+        }, _hoisted_32, 8
         /* PROPS */
-        , _hoisted_15))])];
+        , _hoisted_30))])];
       }),
       _: 2
       /* DYNAMIC */
@@ -18736,12 +18899,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     , ["modelValue", "onUpdate:modelValue", "group"])])]);
   }), 128
   /* KEYED_FRAGMENT */
-  ))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  ))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "bg-blue-700 px-4 py-4 rounded-full",
-    onClick: _cache[0] || (_cache[0] = function () {
+    onClick: _cache[5] || (_cache[5] = function () {
       return $options.createNewList && $options.createNewList.apply($options, arguments);
     })
-  }, _hoisted_20)])]);
+  }, _hoisted_35)])]);
 }
 
 /***/ }),
@@ -18785,10 +18948,10 @@ var _hoisted_7 = {
   "class": "menu absolute top-14 w-56 bg-white dark:bg-gray-900 border dark:border-gray-600 cursor-default rounded-lg font-normal"
 };
 var _hoisted_8 = {
-  "class": "flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2"
+  "class": "flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2"
 };
 var _hoisted_9 = {
-  "class": "flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2"
+  "class": "flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2"
 };
 
 var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, "Dark Mode", -1
@@ -18796,7 +18959,10 @@ var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 );
 
 var _hoisted_11 = {
-  "class": "flex flex-row justify-between cursor-pointer px-6 pt-2 last:pb-2"
+  "class": "flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2"
+};
+var _hoisted_12 = {
+  "class": "flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("header", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
@@ -18822,6 +18988,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* HYDRATE_EVENTS, NEED_PATCH */
   )), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $setup.darkMode]]) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     onClick: _cache[3] || (_cache[3] = function ($event) {
+      return _ctx.$emit('changePass');
+    })
+  }, "Change Password")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    onClick: _cache[4] || (_cache[4] = function ($event) {
       return _ctx.$emit('logout');
     })
   }, "Logout")])])], 512
