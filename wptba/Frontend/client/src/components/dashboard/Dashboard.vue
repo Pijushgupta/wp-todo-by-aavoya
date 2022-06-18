@@ -24,6 +24,7 @@
 			v-bind:postsToLoad="postsToLoad"
 			v-bind:changePassword="changePassword"
 			@disablePassDiag="disablePassDiag"
+			@logout="$emit('logout')"
 			/>
 		</div>
 		

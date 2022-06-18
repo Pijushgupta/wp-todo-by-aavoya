@@ -38,6 +38,12 @@ class User
 
 		add_action('wp_ajax_nopriv_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));
 		add_action('wp_ajax_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));
+
+		add_action('wp_ajax_nopriv_wptbaResetPassword', array(self::$globalNamespace, 'resetPassword'));
+		add_action('wp_ajax_wptbaResetPassword', array(self::$globalNamespace, 'resetPassword'));
+
+		add_action('admin_post_nopriv_wptbaUpdatePassword', array(self::$globalNamespace, 'UpdatePassword'));
+		add_action('admin_post_wptbaUpdatePassword', array(self::$globalNamespace, 'UpdatePassword'));
 	}
 
 	/**
@@ -466,28 +472,43 @@ class User
 
 	public static function changePassword()
 	{
-		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) wp_die();
-
-		$userID = Officer::validateRequest($_POST);
-		if (gettype($userID) != 'integer') {
+		/**
+		 * Verfiy nonce
+		 */
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
 			echo json_encode(0);
 			wp_die();
 		}
 
-		if (!$_POST['oldPass']) wp_die();
-		$oldPass = sanitize_text_field($_POST['oldPass']);
+		/**
+		 * Verfiy JWT and getting user ID from JWT
+		 */
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			/**
+			 * Security Situation - Imidiatly log out the user
+			 * return/echo 0 will do that in client side
+			 */
+			echo json_encode(0);
+			wp_die();
+		}
 
+		/**
+		 * Checking if old password is provided or not 
+		 */
+		if (!$_POST['old_password']) wp_die();
+		$oldPass = sanitize_text_field($_POST['old_password']);
 
-		if (!$_POST['newPass']) wp_die();
-		$newPass = sanitize_text_field($_POST['newPass']);
+		/**
+		 * Checking if new password is provided or not 
+		 */
+		if (!$_POST['new_password']) wp_die();
+		$newPass = sanitize_text_field($_POST['new_password']);
 
-
-
-		if ($oldPass)
-
-
-
-			$user = get_user_by('ID', $userID);
+		/**
+		 * getting user password hash from database
+		 */
+		$user = get_user_by('id', $userID);
 		if ($user == false) {
 			echo json_encode(0);
 			wp_die();
@@ -495,11 +516,126 @@ class User
 
 		$passWordHash = $user->data->user_pass;
 
+		/**
+		 * Checking if old password is correct or not
+		 */
+		if (wp_check_password($oldPass, $passWordHash, $userID) == false) {
+			echo json_encode('failed');
+			wp_die();
+		}
+
+		/**
+		 * Setting New password
+		 */
+		wp_set_password($newPass, $userID);
+
+		echo json_encode('success');
+
+		wp_die();
+	}
+
+	public static function resetPassword()
+	{
+		/**
+		 * Verfiy nonce
+		 */
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			echo json_encode(0);
+			wp_die();
+		}
 
 
+		$email = sanitize_email($_POST['email']);
+		if (!$email) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * checking if the user with provided email id exists or not
+		 */
+		$user = get_user_by('email', $email);
+		if ($user == false) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * Checking if the user is todoer or not
+		 */
+		if (!in_array('todoer', $user->roles)) {
+			echo json_encode(0);
+			wp_die();
+		}
 
 
-		$oldPassword = sanitize_text_field($_POST['oldPassword']);
-		$newPassword = sanitize_text_field($_POST['newPassword']);
+		/**
+		 * checking if the user is associted with any other role(s) apart from 'todoer'
+		 * This required to avoid any security issue in case 'todoer' user added to any other admistrative group accidently.
+		 */
+		if (count($user->roles) > 1) wp_die();
+
+
+		/**
+		 * Getting Key for JWT
+		 */
+		if (get_option('wptba_encryption_key', null) != null) {
+			$key = sanitize_text_field(get_option('wptba_encryption_key'));
+		} else {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * Creating JSON Web Token with user data
+		 */
+		$authObject = new Auth($key, 1);
+		$authObject->setData(array(
+			'password' => wp_generate_password(),
+			'user_id' => $user->ID
+		));
+		$token = $authObject->encode();
+
+		$link = admin_url('admin-post.php') . '?' . 'action=wptbaUpdatePassword&token=' . $token;
+		wp_mail(
+			$email,
+			'Password Reset Request',
+			'<div><p style="display:block">Please click on the link/button to reset the password. </p>
+			<a href="' . $link . '" style="background-color:#3b82f6; padding:10px 20px; color:white; text-transform:capitalize; border-radius: 4px; text-decoration:none display:inline-block;">Verify your email</a>
+			<p>Please Ignore this mail if its not you, who initiated this process.</p>
+			</div>',
+			array('Content-Type: text/html; charset=UTF-8')
+		);
+
+		echo json_encode(1);
+		wp_die();
+	}
+
+	/**
+	 * wptbaUpdatePassword
+	 * This to handle the password reset request from email
+	 * @return void
+	 */
+	public static function UpdatePassword()
+	{
+
+		if (get_option('wptba_encryption_key', null) != null) {
+			$key = sanitize_text_field(get_option('wptba_encryption_key'));
+		} else {
+			wp_die();
+		}
+
+		$authObject = new Auth();
+		$userInfo = $authObject->decode($_REQUEST['token'], $key);
+		if ($userInfo == false) {
+			TemplateEmail::linkExpired();
+			die;
+		}
+		$password = $userInfo['data']->password;
+		$userId = $userInfo['data']->user_id;
+
+		wp_set_password($password, $userId);
+
+		TemplateEmail::passReset($password);
 	}
 }

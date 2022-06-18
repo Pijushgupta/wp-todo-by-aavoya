@@ -12,12 +12,22 @@ class TemplateEmail
 	{
 		$title = 'Account Activated';
 		$body = 'Your account has been activated. You can now login to your account, with the provided password sent via Email.';
+
 		echo self::boilerplate($title, $body);
 	}
 	public static function pendingApproval()
 	{
 		$title = 'Email Verified Successfully';
 		$body = 'Your Email address has been verified. Please wait for Admin to approve your account.';
+		echo self::boilerplate($title, $body);
+	}
+
+	public static function passReset($password)
+	{
+		$title = 'Password Reset';
+		$body = 'Your password has been reset. Please login with your new password.</br>';
+		$body .= 'New Password: <code class="border px-2 py-1 rounded">' . $password . '</code>';
+		$body .= '';
 		echo self::boilerplate($title, $body);
 	}
 

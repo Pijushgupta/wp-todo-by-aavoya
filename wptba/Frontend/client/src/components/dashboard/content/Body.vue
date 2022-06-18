@@ -26,6 +26,10 @@
 				
 			</div>
 		</form>
+		<ul class="tag-area  rounded-lg flex flex-row justify-end p-2">
+
+			<li class="bg-blue-700  rounded-full text-white w-10  h-10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline fill-white" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /> </svg></li>
+		</ul>
 		<div class="flex flex-row flex-wrap">
 			<div v-for="(item, i) in board" :key="i" class="p-2">
 				
@@ -187,17 +191,28 @@ export default{
 				.then(response => response.json())
 				.then(response => { 
 					if (response == 'success') {
-						oldPass = false;
-						newPass = false;
-						newPass2 = false;
-						passErrorMessage = 'Password Updated Successfully';
+						this.oldPass = '';
+						this.newPass = '';
+						this.newPass2 = '';
+						this.passErrorMessage = 'Password Updated Successfully';
+						setTimeout(() => {
+							this.$emit('disablePassDiag')
+						}, 2000);
 					}
 
 					if (response == 'failed') {
-						oldPass = false;
-						newPass = false;
-						newPass2 = false;
-						passErrorMessage = 'Old password is incorrect';
+						this.oldPass = '';
+						this.newPass = '';
+						this.newPass2 = '';
+						this.passErrorMessage = 'Old password is incorrect';
+					}
+
+					if(response == 0 || response == '0'){
+						this.oldPass = '';
+						this.newPass = '';
+						this.newPass2 = '';
+						this.passErrorMessage = '';
+						this.$emit('logout')
 					}
 
 				})

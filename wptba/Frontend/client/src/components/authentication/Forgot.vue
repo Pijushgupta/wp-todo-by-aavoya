@@ -3,9 +3,38 @@ import { ref } from 'vue';
 const props = defineProps({Logo:String});
 const companyLogo = ref(props.Logo ? props.Logo : '' );
 const email = ref('');
+const error = ref(false);
 
 function resetPass(){
+	if (email.value == '') return;
+	const data = new FormData();
+	data.append('action', 'wptbaResetPassword');
+	data.append('wptba_nonce', wptba_nonce);
+	data.append('email', email.value);
 
+	fetch(wptba_ajax_url, {
+		method: 'POST',
+		body: data
+	})
+		.then(response => response.json())
+		.then(response => {
+			/**
+			 * for nonce failure handling
+			 */
+			if (response == 0 || response == '0') {
+				error.value = 'Email id not registered with us';
+			}
+
+			/**
+			 * for success handling
+			 */
+			if (response == 1 || response == '1') { 
+				error.value = 'Password reset link sent to your email';
+			}
+
+
+		})
+		.catch(err => console.log(err));
 }
 </script>
 <template>
@@ -20,7 +49,7 @@ function resetPass(){
 			<label for="email" class="block text-base mb-1  text-gray-400 tracking-tight">Email</label>
 			<input id="email" type="email"  placeholder="email"  class="w-full block px-4 py-2 border rounded mb-3 focus:outline-0  focus:border-blue-600" required v-model="email"/>
 			<div class="flex justify-center ">
-				<p v-show="error" class="text-gray-400 text-base tracking-tight py-2 mb-1">User do no exists or Incorrect Password</p>
+				<p v-show="error" class="text-gray-400 text-base tracking-tight py-2 mb-1">{{error}}</p>
 			</div>
 			<div class="flex justify-between items-center">
 				<div class="flex flex-row">

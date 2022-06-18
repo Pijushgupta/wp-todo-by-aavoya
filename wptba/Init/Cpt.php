@@ -6,9 +6,11 @@ if (!defined('ABSPATH')) exit;
 
 final class Cpt
 {
+	private static $globalNameSpace = 'Wptba\Init\Cpt';
 	public static function create()
 	{
 		self::createBoard();
+		add_action('init', array(self::$globalNameSpace, 'createTaxonomy'));
 		self::createUser();
 	}
 
@@ -71,5 +73,36 @@ final class Cpt
 				'rewrite' => false
 			));
 		}
+	}
+
+	public static function createTaxonomy()
+	{
+		if (taxonomy_exists('wp_todo_board_tag')) return;
+
+		register_taxonomy(
+			'wp_todo_board_tag',
+			'wp_todo_board',
+			array(
+				'labels'	=>	array(
+					'name' => 'User tag',
+					'singular_name' => 'Wp todo board tag',
+					'search_items' => 'Search Wp todo board tag',
+					'popular_items' => 'Popular Wp todo board tag',
+					'all_items' => 'All Wp todo board tag',
+					'parent_item' => 'Parent Wp todo board tag',
+					'parent_item_colon' => 'Parent Wp todo board tag:',
+					'edit_item' => 'Edit Wp todo board tag',
+					'view_item' => 'View Wp todo board tag',
+					'not_found' => 'No Wp todo board tag found',
+
+				),
+				'description' => 'Wp todo board tag, to hold user id as Tag',
+				'public' => true,
+				'hierarchical' => false,
+				'show_ui' => true,
+				'show_in_menu' => true,
+				'show_in_nav_menus' => true,
+			)
+		);
 	}
 }
