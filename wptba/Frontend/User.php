@@ -44,6 +44,9 @@ class User
 
 		add_action('admin_post_nopriv_wptbaUpdatePassword', array(self::$globalNamespace, 'UpdatePassword'));
 		add_action('admin_post_wptbaUpdatePassword', array(self::$globalNamespace, 'UpdatePassword'));
+
+		add_action('wp_ajax_nopriv_wptbaGetAllUsers', array(self::$globalNamespace, 'getAllUsers'));
+		add_action('wp_ajax_wptbaGetAllUsers', array(self::$globalNamespace, 'getAllUsers'));
 	}
 
 	/**
@@ -592,7 +595,7 @@ class User
 		$authObject = new Auth($key, 1);
 		$authObject->setData(array(
 			'password' => wp_generate_password(),
-			'user_id' => $user->ID
+			'user_id' => intval($user->ID)
 		));
 		$token = $authObject->encode();
 
@@ -631,11 +634,74 @@ class User
 			TemplateEmail::linkExpired();
 			die;
 		}
-		$password = $userInfo['data']->password;
-		$userId = $userInfo['data']->user_id;
+		$password = sanitize_text_field($userInfo['data']->password);
+		$userId 	= intval($userInfo['data']->user_id);
 
 		wp_set_password($password, $userId);
 
 		TemplateEmail::passReset($password);
+	}
+
+	/**
+	 * getAllUsers
+	 * Returns all users, except the logged in user doing this ajax call
+	 * @return void
+	 */
+	public static function getAllUsers()
+	{
+		/**
+		 * Verifying Nonce
+		 */
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			wp_die();
+		}
+
+		/**
+		 * Validating the user 
+		 */
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			echo json_encode(0);
+			wp_die();
+		}
+		$userID = intval($userID);
+
+		/**
+		 * Getting all users except the logged(client side) in user
+		 */
+		$users = get_users(array(
+			'role__in' => array('todoer'),
+			'exclude' => array($userID)
+		));
+
+		/**
+		 * Verifying if user exists  
+		 */
+		if (empty($users)) {
+			echo json_encode(1);
+			wp_die();
+		}
+
+		/**
+		 * rebuilding the array to make it more simple
+		 * to handle on client side 
+		 */
+		$users = array_map(function ($user) {
+			if ($user->ID == $userID) return;
+			return array(
+				'id' => intval($user->ID),
+				'name' => sanitize_text_field($user->display_name),
+			);
+		}, $users);
+
+		/**
+		 * Returning the users
+		 */
+		echo json_encode($users);
+
+		/**
+		 * terminating the script
+		 */
+		wp_die();
 	}
 }

@@ -1,5 +1,5 @@
 <template>
-	<div class="dark:bg-gray-900 w-full p-2 ">
+	<div class="dark:bg-gray-900 w-full p-2 content-area">
 		<form v-if="changePassword == true" class="absolute inset-0 w-full flex justify-center items-center z-10  backdrop-blur ">
 			<div class="w-72 md:w-1/5 flex flex-col border border-gray-200 dark:border-gray-800 rounded-lg dark:bg-gray-900 bg-gray-50">
 				
@@ -26,16 +26,13 @@
 				
 			</div>
 		</form>
-		<ul class="tag-area  rounded-lg flex flex-row justify-end p-2">
-
-			<li class="bg-blue-700  rounded-full text-white w-10  h-10 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline fill-white" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /> </svg></li>
-		</ul>
+		<Tag v-if="postsToLoad" v-bind:postToLoad="postsToLoad" />
 		<div class="flex flex-row flex-wrap">
 			<div v-for="(item, i) in board" :key="i" class="p-2">
 				
-					<div class="rounded-lg border border-gray-200 dark:border-gray-800 max-w-xs ">
-						<div class="heading border-b border-gray-200 dark:border-gray-800 p-2 py-2 font-semibold text-gray-500 dark:text-gray-400 cursor-move flex justify-between items-center">
-							<input type="text" v-model="board[i].title" class="dark:bg-gray-900 w-full font-semibold " />
+					<div class="rounded-lg border border-gray-200 dark:border-gray-800 max-w-xs   backdrop-blur ">
+						<div class="heading border-b border-gray-200 dark:border-gray-800  p-2 py-2 font-semibold text-gray-500 dark:text-gray-400  cursor-move flex justify-between items-center">
+							<input type="text" v-model="board[i].title" class="bg-transparent  w-full font-semibold " />
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 cursor-pointer" @click="deleteList(i)" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /> </svg>
 						</div>
 						<div class="p-2 pb-1 ">
@@ -82,12 +79,13 @@
 	</div>
 </template>
 <script>
-
-import draggable from 'vuedraggable'
+import Tag from './Tag/Tag.vue';
+import draggable from 'vuedraggable';
 export default{
 	name:'Body',
 	components:{
-		draggable
+		draggable,
+		Tag
 	},
 	props: {
 		postsToLoad: [String, Number, Boolean],
@@ -102,7 +100,8 @@ export default{
 			oldPass: '',
 			newPass: '',
 			newPass2: '',
-			passErrorMessage:false,
+			passErrorMessage: false,
+			
 		}
 	},
 	methods:{
@@ -218,6 +217,7 @@ export default{
 				})
 
 		},
+		
 	},
 	mounted(){
 		this.getMeta();

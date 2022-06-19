@@ -9,7 +9,7 @@
 						<span class="flex justify-center items-center w-7 h-7">{{userLogo}}</span>
 						
 					</div>
-					<div v-show="showPreference" class="menu absolute top-14 w-56 bg-white dark:bg-gray-900 border dark:border-gray-600 cursor-default rounded-lg font-normal ">
+					<div v-show="showPreference" class="menu absolute top-14 w-56 bg-white dark:bg-gray-900 border dark:border-gray-800 cursor-default rounded-lg font-normal z-10 ">
 							<ul>
 								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">{{displayName}}</li>
 								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">
