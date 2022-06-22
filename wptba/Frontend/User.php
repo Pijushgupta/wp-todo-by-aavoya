@@ -454,6 +454,10 @@ class User
 
 		$userPassword = wp_generate_password();
 
+		/**
+		 * Creating User and storing the user ID retured from wp_insert_user,
+		 * in a variable. To use it to store user meta
+		 */
 		$userID = wp_insert_user(array(
 			'user_login' 	=> $userName,
 			'user_pass' 	=> $userPassword,
@@ -462,9 +466,19 @@ class User
 			'role' 				=> 'todoer'
 		));
 
+		/**
+		 * Checking if the user creation was successful or not
+		 */
 		if (gettype($userID) != 'integer') return false;
 
+		/**
+		 * Creating tag with the user ID
+		 */
+		if (is_wp_error(wp_insert_term($userID, 'wp_todo_board_tag'))) return;
 
+		/**
+		 * Adding User Meta
+		 */
 		add_user_meta($userID, 'wptba_user_meta', serialize(array(
 			'bio' => '',
 			'dark_mode' => true,

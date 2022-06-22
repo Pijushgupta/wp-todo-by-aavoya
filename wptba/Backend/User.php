@@ -124,6 +124,11 @@ class User
 		if (gettype($userID) != 'integer') wp_die();
 
 		/**
+		 * Creating tag with the user ID
+		 */
+		if (is_wp_error(wp_insert_term($userID, 'wp_todo_board_tag'))) return;
+
+		/**
 		 * Adding User Meta
 		 */
 		add_user_meta($userID, 'wptba_user_meta', serialize(array(

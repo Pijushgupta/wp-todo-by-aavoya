@@ -25,6 +25,12 @@ class Posts
 
 		add_action('wp_ajax_nopriv_wptbaDeletePost', array(self::$globalNamespace, 'deletePost'));
 		add_action('wp_ajax_wptbaDeletePost', array(self::$globalNamespace, 'deletePost'));
+
+		add_action('wp_ajax_nopriv_wptbaGetTags', array(self::$globalNamespace, 'getTags'));
+		add_action('wp_ajax_wptbaGetTags', array(self::$globalNamespace, 'getTags'));
+
+		add_action('wp_ajax_nopriv_wptbaRemoveTag', array(self::$globalNamespace, 'removeTag'));
+		add_action('wp_ajax_wptbaRemoveTag', array(self::$globalNamespace, 'removeTag'));
 	}
 
 	public static function getPosts()
@@ -170,6 +176,98 @@ class Posts
 		delete_post_meta($post_id, 'wp_todo_board_meta');
 		wp_delete_post($post_id, true);
 		echo json_encode($post_id);
+		wp_die();
+	}
+
+	public static function getTags()
+	{
+		//get post tags
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			wp_die();
+		}
+
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		$post_id = intval($_POST['post_id']);
+
+		$tags = get_the_terms($post_id, 'wp_todo_board_tag');
+
+		if ($tags == false) {
+			echo json_encode('null');
+			wp_die();
+		}
+
+		$tags = array_map(function ($tag) {
+			return array(
+				'id' => $tag->name
+			);
+		}, $tags);
+
+		echo json_encode($tags);
+		wp_die();
+	}
+
+	/**
+	 * removeTag
+	 * 
+	 * @return void
+	 */
+	public static function removeTag()
+	{
+		/**
+		 * verifying nonce 
+		 */
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			wp_die();
+		}
+
+		/**
+		 * verifying jwt  
+		 */
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * checking if tag id and post id provided or not 
+		 */
+		if (!$_POST['tagId'] or !$_POST['postId']) wp_die();
+
+		/**
+		 * Sanitizing post id and term/tag id
+		 */
+		$tagId 	= intval($_POST['tagId']);
+		$postId = intval($_POST['postId']);
+
+		/**
+		 * removing the term/tag id
+		 */
+		$status = wp_remove_object_terms($postId, $tagId, 'wp_todo_board_tag');
+
+		/**
+		 * checking if there is an error during term removing process
+		 * if there is an error, which will be wp_error object,
+		 * is_wp_error is a method/function to check wp_error object
+		 * 
+		 * if there is an error, sending false as signal and terminating the 
+		 * flow with wp_die();
+		 */
+		if (is_wp_error($status)) {
+			echo json_encode(false);
+			wp_die();
+		}
+
+		/**
+		 * sending success signal in case there is not error 
+		 * and terminating the flow with wp_die();
+		 */
+		echo json_encode(true);
 		wp_die();
 	}
 }

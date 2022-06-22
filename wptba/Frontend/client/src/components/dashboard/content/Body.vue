@@ -26,7 +26,11 @@
 				
 			</div>
 		</form>
-		<Tag v-if="postsToLoad" v-bind:postToLoad="postsToLoad" />
+		<Tag 
+		v-if="postsToLoad" 
+		v-bind:postToLoad="postsToLoad" 
+		@logout = "$emit('logout')"
+		/>
 		<div class="flex flex-row flex-wrap">
 			<div v-for="(item, i) in board" :key="i" class="p-2">
 				

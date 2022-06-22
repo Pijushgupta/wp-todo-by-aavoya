@@ -490,6 +490,24 @@ Ensure the default browser behavior of the `hidden` attribute.
 .left-0 {
   left: 0px;
 }
+.-top-5 {
+  top: -1.25rem;
+}
+.-right-5 {
+  right: -1.25rem;
+}
+.-top-2 {
+  top: -0.5rem;
+}
+.-right-2 {
+  right: -0.5rem;
+}
+.-top-1 {
+  top: -0.25rem;
+}
+.-right-1 {
+  right: -0.25rem;
+}
 .z-10 {
   z-index: 10;
 }
@@ -515,6 +533,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .mt-auto {
   margin-top: auto;
+}
+.mr-2 {
+  margin-right: 0.5rem;
 }
 .block {
   display: block;
@@ -718,6 +739,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-blue-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 .fill-white {
   fill: #fff;

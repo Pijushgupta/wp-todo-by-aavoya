@@ -18262,14 +18262,23 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     postToLoad: [Number, Boolean]
   },
+  emits: {
+    logout: String
+  },
   setup: function setup(__props, _ref) {
-    var expose = _ref.expose;
+    var expose = _ref.expose,
+        emit = _ref.emit;
     expose();
     var props = __props;
     var id = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.postToLoad);
     var openAddTagDialog = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
     var userCred = localStorage.getItem('jwt');
-    var users = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
+    var users = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var tags = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var taggedUsers = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    /**
+     * Gettign all the todoers from the server, except the current user
+     */
 
     function getAllUser() {
       if (userCred.value == false) return;
@@ -18283,23 +18292,140 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        console.log(res);
+        if (res == 1 || res == '1') {
+          users.value = [];
+          return;
+        }
+
+        if (res == 0 || res == '0') {
+          emit('logout');
+          return;
+        }
+
+        users.value = res;
       })["catch"](function (err) {
         console.log(err);
       });
+    }
+    /**
+     * Getting all the tags from the server related to current post
+     */
+
+
+    function getTags() {
+      if (userCred.value == false) return;
+      var data = new FormData();
+      data.append('jwt', userCred);
+      data.append('wptba_nonce', wptba_nonce);
+      data.append('action', 'wptbaGetTags');
+      data.append('post_id', id.value);
+      fetch(wptba_ajax_url, {
+        method: 'POST',
+        body: data
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        if (res == 0 || res == '0') {
+          emit('logout');
+          return;
+        }
+
+        if (res == null || res == 'null') {
+          tags.value = [];
+          return;
+        }
+
+        tags.value = res;
+        getTaggedUser();
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    }
+    /**
+     * Converting Tag id to user and storing 
+     */
+
+
+    function getTaggedUser() {
+      if (Array.isArray(tags.value) == false || tags.length == 0) return;
+      taggedUsers.value = [];
+
+      for (var i = 0; i < tags.value.length; i++) {
+        for (var j = 0; j < users.value.length; j++) {
+          if (users.value[j].id == tags.value[i].id) {
+            taggedUsers.value.push(users.value[j]);
+            break;
+          }
+        }
+      }
+    }
+    /**
+     * Convert full name to initial
+     */
+
+
+    function createInitials(name) {
+      var nameArray = name.split(" ");
+      var initial;
+
+      if (nameArray.length >= 2) {
+        initial = nameArray[0].charAt(0).toUpperCase() + nameArray[nameArray.length - 1].charAt(0).toUpperCase();
+      } else {
+        initial = nameArray[0].charAt(0).toUpperCase() + nameArray[0].charAt(1).toUpperCase();
+      }
+
+      return initial;
+    }
+    /**
+     * remove specific from tag list
+     */
+
+
+    function removeTag(tagId) {
+      //TODO: remove the tag from the server first then remove from the client 
+      var data = new FormData();
+      data.append('tagId', tagId);
+      data.append('postId', id.value);
+      data.append('wptba_nonce', wptba_nonce);
+      data.append('jwt', userCred);
+      data.append('action', 'wptbaRemoveTag');
+      fetch(wptba_ajax_url, {
+        method: 'POST',
+        body: data
+      }).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        console.log(response);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+      tags.value = tags.value.filter(function (tag) {
+        if (tag.id != tagId) {
+          return tag;
+        }
+      });
+      getTaggedUser();
     }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
       if (id.value == false) return;
       getAllUser();
+      getTags();
     });
     var __returned__ = {
       props: props,
+      emit: emit,
       id: id,
       openAddTagDialog: openAddTagDialog,
       userCred: userCred,
       users: users,
+      tags: tags,
+      taggedUsers: taggedUsers,
       getAllUser: getAllUser,
+      getTags: getTags,
+      getTaggedUser: getTaggedUser,
+      createInitials: createInitials,
+      removeTag: removeTag,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
       onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted
     };
@@ -18941,7 +19067,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-blue-700 dark:bg-blue-700 text-white py-2 px-4 rounded text-center cursor-pointer"
   }, "Change")])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $props.postsToLoad ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Tag, {
     key: 1,
-    postToLoad: $props.postsToLoad
+    postToLoad: $props.postsToLoad,
+    onLogout: _cache[5] || (_cache[5] = function ($event) {
+      return _ctx.$emit('logout');
+    })
   }, null, 8
   /* PROPS */
   , ["postToLoad"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.board, function (item, i) {
@@ -19027,7 +19156,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* KEYED_FRAGMENT */
   ))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "bg-blue-700 px-4 py-4 rounded-full",
-    onClick: _cache[5] || (_cache[5] = function () {
+    onClick: _cache[6] || (_cache[6] = function () {
       return $options.createNewList && $options.createNewList.apply($options, arguments);
     })
   }, _hoisted_35)])]);
@@ -19300,10 +19429,22 @@ var _hoisted_10 = {
   "class": "tag-area rounded-lg flex flex-row justify-end p-2"
 };
 var _hoisted_11 = {
-  "class": "relative"
+  key: 0,
+  "class": "flex flex-row"
 };
+var _hoisted_12 = ["onClick"];
 
-var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
+var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+  "fill-rule": "evenodd",
+  d: "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z",
+  "clip-rule": "evenodd"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_14 = [_hoisted_13];
+
+var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   "class": "h-5 w-5 inline fill-white",
   viewBox: "0 0 20 20",
@@ -19314,9 +19455,9 @@ var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_13 = [_hoisted_12];
+var _hoisted_16 = [_hoisted_15];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     "class": "h-5 w-5 cursor-pointer",
     viewBox: "0 0 20 20",
@@ -19326,14 +19467,31 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, _hoisted_7))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Area "), _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" List Area "), _hoisted_9])], 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [$setup.taggedUsers.length != 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggedUsers, function (taggedUser) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+      key: taggedUser.id,
+      "class": "bg-blue-500 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer mr-2 relative"
+    }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+      onClick: function onClick($event) {
+        return $setup.removeTag(taggedUser.id);
+      },
+      xmlns: "http://www.w3.org/2000/svg",
+      "class": "h-5 w-5 absolute -top-1 -right-1 cursor-pointer bg-blue-500 rounded-full",
+      viewBox: "0 0 20 20",
+      fill: "currentColor"
+    }, _hoisted_14, 8
+    /* PROPS */
+    , _hoisted_12)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggedUser.name)), 1
+    /* TEXT */
+    )]);
+  }), 128
+  /* KEYED_FRAGMENT */
+  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return $setup.openAddTagDialog = !$setup.openAddTagDialog;
     }),
     "class": "bg-blue-700 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer"
-  }, _hoisted_13)])])], 64
-  /* STABLE_FRAGMENT */
-  );
+  }, _hoisted_16)])]);
 }
 
 /***/ }),
