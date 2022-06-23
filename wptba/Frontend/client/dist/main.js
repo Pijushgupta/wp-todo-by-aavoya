@@ -18276,6 +18276,7 @@ __webpack_require__.r(__webpack_exports__);
     var users = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var tags = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var taggedUsers = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var taggableUsers = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     /**
      * Gettign all the todoers from the server, except the current user
      */
@@ -18303,6 +18304,7 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         users.value = res;
+        console.log(users.value);
       })["catch"](function (err) {
         console.log(err);
       });
@@ -18336,7 +18338,8 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         tags.value = res;
-        getTaggedUser();
+        console.log(tags.value);
+        getTaggedUsers();
       })["catch"](function (err) {
         console.log(err);
       });
@@ -18346,7 +18349,7 @@ __webpack_require__.r(__webpack_exports__);
      */
 
 
-    function getTaggedUser() {
+    function getTaggedUsers() {
       if (Array.isArray(tags.value) == false || tags.length == 0) return;
       taggedUsers.value = [];
 
@@ -18358,6 +18361,34 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       }
+
+      getTaggableUser();
+    }
+    /**
+     * creating list of taggable users 
+     * taggable users: users that are not in the tagged used list
+     */
+
+
+    function getTaggableUser() {
+      if (Array.isArray(users.value) == false || users.length == 0) return;
+
+      if (Array.isArray(tags.value) == false || tags.length == 0) {
+        taggableUsers.value = users.value;
+        return;
+      }
+
+      taggableUsers.value = [];
+
+      for (var i = 0; i < users.value.length; i++) {
+        for (var j = 0; j < tags.value.length; j++) {
+          if (tags.value[j].id != users.value[i].id) {
+            taggableUsers.value.push(users.value[i]);
+          }
+        }
+      }
+
+      console.log(taggableUsers.value);
     }
     /**
      * Convert full name to initial
@@ -18395,16 +18426,23 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         return response.json();
       }).then(function (response) {
-        console.log(response);
+        if (response == true || response == 'true') {
+          tags.value = tags.value.filter(function (tag) {
+            if (tag.id != tagId) {
+              return tag;
+            }
+          });
+          getTaggedUsers();
+          return;
+        }
+
+        if (response == 0 || response == '0') {
+          emit('logout');
+          return;
+        }
       })["catch"](function (error) {
         return console.log(error);
       });
-      tags.value = tags.value.filter(function (tag) {
-        if (tag.id != tagId) {
-          return tag;
-        }
-      });
-      getTaggedUser();
     }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
@@ -18421,9 +18459,11 @@ __webpack_require__.r(__webpack_exports__);
       users: users,
       tags: tags,
       taggedUsers: taggedUsers,
+      taggableUsers: taggableUsers,
       getAllUser: getAllUser,
       getTags: getTags,
-      getTaggedUser: getTaggedUser,
+      getTaggedUsers: getTaggedUsers,
+      getTaggableUser: getTaggableUser,
       createInitials: createInitials,
       removeTag: removeTag,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,

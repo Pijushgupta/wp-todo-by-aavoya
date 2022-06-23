@@ -42,9 +42,13 @@ const emit = defineEmits({
 const id  = ref(props.postToLoad);
 const openAddTagDialog = ref(false);
 const userCred = localStorage.getItem('jwt');
+
 const users = ref([]);
 const tags = ref([]);
+
 const taggedUsers = ref([]);
+const taggableUsers = ref([]);
+
 
 
 
@@ -74,7 +78,7 @@ function getAllUser() {
 				return;
 			}
 			users.value = res;
-			
+			console.log(users.value);
 			
 			
 		})
@@ -112,8 +116,8 @@ function getTags() {
 			}
 
 			tags.value = res;
-			
-			getTaggedUser();
+			console.log(tags.value);
+			getTaggedUsers();
 			
 			
 		})
@@ -125,7 +129,7 @@ function getTags() {
 /**
  * Converting Tag id to user and storing 
  */
-function getTaggedUser() {
+function getTaggedUsers() {
 	if (Array.isArray(tags.value) == false || tags.length == 0) return;
 	taggedUsers.value = [];
 	for (let i = 0; i < tags.value.length; i ++ ){
@@ -136,8 +140,33 @@ function getTaggedUser() {
 			}
 		}
 	}	
+	getTaggableUser();
 
 
+}
+
+/**
+ * creating list of taggable users 
+ * taggable users: users that are not in the tagged used list
+ */
+function getTaggableUser() {
+	if (Array.isArray(users.value) == false || users.length == 0) return;
+
+	if (Array.isArray(tags.value) == false || tags.length == 0) {
+		taggableUsers.value = users.value;
+		return;
+	}
+
+	taggableUsers.value = [];
+
+		for(let i = 0; i < users.value.length; i ++){ 
+			for (let j = 0; j < tags.value.length; j++) { 
+				if (tags.value[j].id !=  users.value[i].id) {
+						taggableUsers.value.push(users.value[i]);
+					}
+			}
+	}
+	console.log(taggableUsers.value);
 }
 
 /**
@@ -175,20 +204,33 @@ function removeTag(tagId) {
 	})
 		.then(response => response.json())
 		.then(response => {
-		console.log(response);
+			
+			if (response == true || response == 'true') {
+				tags.value = tags.value.filter((tag) => {
+					if (tag.id != tagId) {
+						return tag;
+					}
+				});
+				getTaggedUsers();
+				return;
+			}
+
+			if (response == 0 || response == '0') {
+				emit('logout');
+				return;
+			}
+			
+			
 		})
 		.catch(error => console.log(error));
 	
 
-	tags.value = tags.value.filter((tag) => {
-		if (tag.id != tagId) {
-			return tag;
-		}
-	}); 
+	 
 	
-	getTaggedUser();
+	
 	
 }
+
 
 
 

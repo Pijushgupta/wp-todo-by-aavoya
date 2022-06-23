@@ -181,7 +181,7 @@ class Posts
 
 	public static function getTags()
 	{
-		//get post tags
+
 		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
 			wp_die();
 		}
@@ -201,11 +201,27 @@ class Posts
 			wp_die();
 		}
 
+		/**
+		 * Simplifying the tags array
+		 */
 		$tags = array_map(function ($tag) {
 			return array(
 				'id' => $tag->name
 			);
 		}, $tags);
+
+		/**
+		 * removing tags belongs to the calling userID
+		 * its working along with the 'getAllUsers' method in 
+		 * User.php(Frontend)
+		 */
+		if (!empty($tags)) {
+			for ($i = 0; $i < count($tags); $i++) {
+				if ($tags[$i]['id'] == $userID) {
+					unset($tags[$i]);
+				}
+			}
+		}
 
 		echo json_encode($tags);
 		wp_die();
@@ -242,7 +258,7 @@ class Posts
 		/**
 		 * Sanitizing post id and term/tag id
 		 */
-		$tagId 	= intval($_POST['tagId']);
+		$tagId 	= sanitize_text_field($_POST['tagId']);
 		$postId = intval($_POST['postId']);
 
 		/**
