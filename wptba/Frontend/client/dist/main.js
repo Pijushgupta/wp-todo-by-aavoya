@@ -18293,18 +18293,18 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        if (res == 1 || res == '1') {
-          users.value = [];
-          return;
-        }
-
         if (res == 0 || res == '0') {
           emit('logout');
           return;
         }
 
-        users.value = res;
-        console.log(users.value);
+        if (res == 1 || res == '1') {
+          users.value = [];
+        } else {
+          users.value = res;
+        }
+
+        getTags();
       })["catch"](function (err) {
         console.log(err);
       });
@@ -18334,12 +18334,12 @@ __webpack_require__.r(__webpack_exports__);
 
         if (res == null || res == 'null') {
           tags.value = [];
-          return;
+        } else {
+          tags.value = res;
         }
 
-        tags.value = res;
-        console.log(tags.value);
         getTaggedUsers();
+        getTaggableUser();
       })["catch"](function (err) {
         console.log(err);
       });
@@ -18361,8 +18361,6 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       }
-
-      getTaggableUser();
     }
     /**
      * creating list of taggable users 
@@ -18371,19 +18369,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function getTaggableUser() {
-      if (Array.isArray(users.value) == false || users.length == 0) return;
-
-      if (Array.isArray(tags.value) == false || tags.length == 0) {
-        taggableUsers.value = users.value;
+      if (Array.isArray(users.value) == false || users.value.length == 0) {
+        //TODO: return a message that, there is no other user in the server.
         return;
       }
 
-      taggableUsers.value = [];
+      if (Array.isArray(tags.value) == false || tags.value.length == 0) {
+        taggableUsers.value = users.value;
+      } else {
+        taggableUsers.value = [];
 
-      for (var i = 0; i < users.value.length; i++) {
-        for (var j = 0; j < tags.value.length; j++) {
-          if (tags.value[j].id != users.value[i].id) {
-            taggableUsers.value.push(users.value[i]);
+        for (var i = 0; i < users.value.length; i++) {
+          for (var j = 0; j < tags.value.length; j++) {
+            if (tags.value[j].id != users.value[i].id) {
+              taggableUsers.value.push(users.value[i]);
+            }
           }
         }
       }
@@ -18413,7 +18413,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function removeTag(tagId) {
-      //TODO: remove the tag from the server first then remove from the client 
       var data = new FormData();
       data.append('tagId', tagId);
       data.append('postId', id.value);
@@ -18448,7 +18447,6 @@ __webpack_require__.r(__webpack_exports__);
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
       if (id.value == false) return;
       getAllUser();
-      getTags();
     });
     var __returned__ = {
       props: props,

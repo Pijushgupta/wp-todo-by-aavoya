@@ -69,16 +69,21 @@ function getAllUser() {
 	})
 		.then(res => res.json())
 		.then(res => {
-			if (res == 1 || res == '1') {
-				users.value = [];
-				return;
-			}
+			
 			if (res == 0 || res == '0') {
 				emit('logout');
 				return;
 			}
-			users.value = res;
-			console.log(users.value);
+
+			if (res == 1 || res == '1') {
+				users.value = [];
+
+			} else {
+				users.value = res;
+			
+			}
+			getTags();
+			
 			
 			
 		})
@@ -91,6 +96,7 @@ function getAllUser() {
  */
 function getTags() {
 	if (userCred.value == false) return;
+
 	const data = new FormData();
 	data.append('jwt', userCred);
 	data.append('wptba_nonce', wptba_nonce);
@@ -112,14 +118,15 @@ function getTags() {
 
 			if (res == null || res == 'null') {
 				tags.value = [];
-				return;
+				
+			} else {
+				tags.value = res;
 			}
 
-			tags.value = res;
-			console.log(tags.value);
+			
 			getTaggedUsers();
 			
-			
+			getTaggableUser();
 		})
 		.catch(err => {
 			console.log(err);
@@ -140,9 +147,8 @@ function getTaggedUsers() {
 			}
 		}
 	}	
-	getTaggableUser();
-
-
+	
+	
 }
 
 /**
@@ -150,14 +156,18 @@ function getTaggedUsers() {
  * taggable users: users that are not in the tagged used list
  */
 function getTaggableUser() {
-	if (Array.isArray(users.value) == false || users.length == 0) return;
-
-	if (Array.isArray(tags.value) == false || tags.length == 0) {
-		taggableUsers.value = users.value;
+	
+	if (Array.isArray(users.value) == false || users.value.length == 0) {
+		//TODO: return a message that, there is no other user in the server.
 		return;
-	}
+	} 
+	
+	if (Array.isArray(tags.value) == false || tags.value.length == 0) {
+		taggableUsers.value = users.value;
+		
 
-	taggableUsers.value = [];
+	} else { 
+		taggableUsers.value = [];
 
 		for(let i = 0; i < users.value.length; i ++){ 
 			for (let j = 0; j < tags.value.length; j++) { 
@@ -165,8 +175,12 @@ function getTaggableUser() {
 						taggableUsers.value.push(users.value[i]);
 					}
 			}
+		}
 	}
 	console.log(taggableUsers.value);
+	
+	
+
 }
 
 /**
@@ -189,8 +203,6 @@ function createInitials(name) {
  * remove specific from tag list
  */
 function removeTag(tagId) {
-	//TODO: remove the tag from the server first then remove from the client 
-
 	const data = new FormData();
 	data.append('tagId', tagId);
 	data.append('postId', id.value)
@@ -220,15 +232,8 @@ function removeTag(tagId) {
 				return;
 			}
 			
-			
 		})
-		.catch(error => console.log(error));
-	
-
-	 
-	
-	
-	
+		.catch(error => console.log(error));	
 }
 
 
@@ -239,7 +244,6 @@ onMounted(() => {
 	if(id.value == false) return;
 
 	getAllUser();
-	getTags();
 	
 	
 });
