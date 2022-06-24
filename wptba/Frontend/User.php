@@ -701,12 +701,13 @@ class User
 		 * to handle on client side 
 		 */
 		$users = array_map(function ($user) {
-			if ($user->ID == $userID) return;
+
 			return array(
 				'id' => intval($user->ID),
 				'name' => sanitize_text_field($user->display_name),
 			);
 		}, $users);
+
 
 		/**
 		 * Returning the users

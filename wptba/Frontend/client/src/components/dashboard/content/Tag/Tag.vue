@@ -7,13 +7,25 @@
 						<div class="w-1/2">Share with</div>
 						<div class="w-1/2 flex justify-end"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 cursor-pointer" viewBox="0 0 20 20" fill="currentColor" @click="openAddTagDialog = !openAddTagDialog"> <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /> </svg></div>
 					</div>
-					<!-- Search Area -->
-					<div class="px-4 py-2 ">
-						<input class="w-full border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded focus:outline-none text-gray-500 dark:text-gray-400"/>
-					</div>
+				
 					<!-- List Area -->
-					<div class="px-4 py-2  ">
+					<div v-if="taggableUsers.length >0" class="px-4 py-2  flex flex-row items-center flex-start flex-wrap justify-center">
+						<div 
+						v-for="taggableUser in taggableUsers" 
+						:key="taggableUser.id" 
 
+						@mouseenter="showtooltip(taggableUser.id,true)"
+						@mouseleave="showtooltip(taggableUser.id,false)"
+						@click="addTag(taggableUser.id)"
+
+						class="bg-blue-500  rounded-full text-white w-12  h-12  cursor-pointer m-2 flex justify-center items-center relative">
+							{{createInitials(taggableUser.name)}}
+							<!-- tooltip -->
+							<div v-bind:id="taggableUser.id+'tt'" class="absolute text-xs -top-7 bg-gray-100 shadow-sm dark:bg-gray-800 text-gray-600 dark:text-gray-400 min-w-max p-1 rounded hidden backdrop-blur">
+								{{taggableUser.name}}
+							</div>
+							<!-- tooltip ends -->
+						</div>
 					</div>
 				</div>
 		</div>
@@ -32,7 +44,8 @@
 		</div>
 </template>
 <script setup>
-import { ref, onMounted , defineEmits} from 'vue';
+
+import { ref, onMounted } from 'vue';
 const props = defineProps({
 	postToLoad:[Number,Boolean]
 })
@@ -57,7 +70,7 @@ const taggableUsers = ref([]);
  * Gettign all the todoers from the server, except the current user
  */
 function getAllUser() {
-	if (userCred.value == false) return;
+	if (!userCred) return;
 	const data = new FormData();
 	data.append('jwt', userCred);
 	data.append('wptba_nonce', wptba_nonce);
@@ -82,6 +95,7 @@ function getAllUser() {
 				users.value = res;
 			
 			}
+			
 			getTags();
 			
 			
@@ -95,7 +109,7 @@ function getAllUser() {
  * Getting all the tags from the server related to current post
  */
 function getTags() {
-	if (userCred.value == false) return;
+	if (!userCred) return;
 
 	const data = new FormData();
 	data.append('jwt', userCred);
@@ -137,7 +151,7 @@ function getTags() {
  * Converting Tag id to user and storing 
  */
 function getTaggedUsers() {
-	if (Array.isArray(tags.value) == false || tags.length == 0) return;
+	if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
 	taggedUsers.value = [];
 	for (let i = 0; i < tags.value.length; i ++ ){
 		for (let j = 0; j < users.value.length; j ++ ){
@@ -147,6 +161,9 @@ function getTaggedUsers() {
 			}
 		}
 	}	
+	//console.log(users.value);
+
+	
 	
 	
 }
@@ -163,21 +180,31 @@ function getTaggableUser() {
 	} 
 	
 	if (Array.isArray(tags.value) == false || tags.value.length == 0) {
+		
 		taggableUsers.value = users.value;
 		
 
 	} else { 
-		taggableUsers.value = [];
-
-		for(let i = 0; i < users.value.length; i ++){ 
-			for (let j = 0; j < tags.value.length; j++) { 
-				if (tags.value[j].id !=  users.value[i].id) {
-						taggableUsers.value.push(users.value[i]);
-					}
+		
+		
+		taggableUsers.value = users.value.filter((user) => {
+			let t = 0;
+			for (let i = 0; i < tags.value.length; i++){
+				if (user.id == tags.value[i].id) {
+					t++;
+				}
 			}
-		}
+			if (t == 0) {
+				return user;
+			}
+		});
+
+		
+
+	
+		
 	}
-	console.log(taggableUsers.value);
+	
 	
 	
 
@@ -203,6 +230,8 @@ function createInitials(name) {
  * remove specific from tag list
  */
 function removeTag(tagId) {
+	if (!userCred) return;
+
 	const data = new FormData();
 	data.append('tagId', tagId);
 	data.append('postId', id.value)
@@ -218,12 +247,8 @@ function removeTag(tagId) {
 		.then(response => {
 			
 			if (response == true || response == 'true') {
-				tags.value = tags.value.filter((tag) => {
-					if (tag.id != tagId) {
-						return tag;
-					}
-				});
-				getTaggedUsers();
+				getTags();
+				
 				return;
 			}
 
@@ -236,15 +261,60 @@ function removeTag(tagId) {
 		.catch(error => console.log(error));	
 }
 
+/**
+ * add to server then update list by calling getTag method
+ */
+function addTag(tagId) {
+	if (!userCred) return;
 
+	const data = new FormData();
+	data.append('jwt', userCred);
+	data.append('wptba_nonce', wptba_nonce);
+	data.append('action', 'wptbaAddTag');
 
+	data.append('tagId', tagId);
+	data.append('postId', id.value);
+
+	fetch(wptba_ajax_url, {
+		method: 'POST',
+		body: data
+	})
+		.then(response => response.json())
+		.then(response => { 
+			if (response == '0' || response == 0) {
+				emit('logout');
+				return;
+			}
+
+			if (response == null || response == 'null') {
+				return;
+			}
+
+			
+			getTags();
+
+		})
+		.catch(err => console.log(err));
+	
+}
+
+function showtooltip(id,status) {
+
+	let tt = document.getElementById(id + 'tt');
+	if (status === true) { 
+		
+		tt.classList.remove('hidden');
+	}
+
+	if (status === false) { 
+		tt.classList.add('hidden');
+	}
+	
+}
 
 
 onMounted(() => {
 	if(id.value == false) return;
-
 	getAllUser();
-	
-	
 });
 </script>

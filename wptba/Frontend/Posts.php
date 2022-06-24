@@ -31,6 +31,9 @@ class Posts
 
 		add_action('wp_ajax_nopriv_wptbaRemoveTag', array(self::$globalNamespace, 'removeTag'));
 		add_action('wp_ajax_wptbaRemoveTag', array(self::$globalNamespace, 'removeTag'));
+
+		add_action('wp_ajax_nopriv_wptbaAddTag', array(self::$globalNamespace, 'addTag'));
+		add_action('wp_ajax_wptbaAddTag', array(self::$globalNamespace, 'addTag'));
 	}
 
 	public static function getPosts()
@@ -226,6 +229,47 @@ class Posts
 		echo json_encode($tags);
 		wp_die();
 	}
+
+
+	/**
+	 * addTag
+	 *
+	 * @return void
+	 */
+	public function addTag()
+	{
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			wp_die();
+		}
+
+		$userID = Officer::validateRequest($_POST);
+		if (gettype($userID) != 'integer') {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * checking if tag id and post id provided or not 
+		 */
+		if (!$_POST['tagId'] or !$_POST['postId']) wp_die();
+
+		$post_id = intval($_POST['postId']);
+		$tag_id = sanitize_text_field($_POST['tagId']);
+
+
+		$status = has_term($tag_id, 'wp_todo_board_tag', $post_id);
+		if ($status == true) wp_die();
+
+		if (is_wp_error(wp_add_object_terms($post_id, $tag_id, 'wp_todo_board_tag'))) {
+			echo json_encode(null);
+			wp_die();
+		}
+
+		echo json_encode(true);
+		wp_die();
+	}
+
+
 
 	/**
 	 * removeTag

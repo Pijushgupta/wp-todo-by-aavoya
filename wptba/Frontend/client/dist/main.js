@@ -18282,7 +18282,7 @@ __webpack_require__.r(__webpack_exports__);
      */
 
     function getAllUser() {
-      if (userCred.value == false) return;
+      if (!userCred) return;
       var data = new FormData();
       data.append('jwt', userCred);
       data.append('wptba_nonce', wptba_nonce);
@@ -18315,7 +18315,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function getTags() {
-      if (userCred.value == false) return;
+      if (!userCred) return;
       var data = new FormData();
       data.append('jwt', userCred);
       data.append('wptba_nonce', wptba_nonce);
@@ -18350,7 +18350,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function getTaggedUsers() {
-      if (Array.isArray(tags.value) == false || tags.length == 0) return;
+      if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
       taggedUsers.value = [];
 
       for (var i = 0; i < tags.value.length; i++) {
@@ -18360,7 +18360,8 @@ __webpack_require__.r(__webpack_exports__);
             break;
           }
         }
-      }
+      } //console.log(users.value);
+
     }
     /**
      * creating list of taggable users 
@@ -18377,18 +18378,20 @@ __webpack_require__.r(__webpack_exports__);
       if (Array.isArray(tags.value) == false || tags.value.length == 0) {
         taggableUsers.value = users.value;
       } else {
-        taggableUsers.value = [];
+        taggableUsers.value = users.value.filter(function (user) {
+          var t = 0;
 
-        for (var i = 0; i < users.value.length; i++) {
-          for (var j = 0; j < tags.value.length; j++) {
-            if (tags.value[j].id != users.value[i].id) {
-              taggableUsers.value.push(users.value[i]);
+          for (var i = 0; i < tags.value.length; i++) {
+            if (user.id == tags.value[i].id) {
+              t++;
             }
           }
-        }
-      }
 
-      console.log(taggableUsers.value);
+          if (t == 0) {
+            return user;
+          }
+        });
+      }
     }
     /**
      * Convert full name to initial
@@ -18413,6 +18416,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function removeTag(tagId) {
+      if (!userCred) return;
       var data = new FormData();
       data.append('tagId', tagId);
       data.append('postId', id.value);
@@ -18426,12 +18430,7 @@ __webpack_require__.r(__webpack_exports__);
         return response.json();
       }).then(function (response) {
         if (response == true || response == 'true') {
-          tags.value = tags.value.filter(function (tag) {
-            if (tag.id != tagId) {
-              return tag;
-            }
-          });
-          getTaggedUsers();
+          getTags();
           return;
         }
 
@@ -18442,6 +18441,51 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return console.log(error);
       });
+    }
+    /**
+     * add to server then update list by calling getTag method
+     */
+
+
+    function addTag(tagId) {
+      if (!userCred) return;
+      var data = new FormData();
+      data.append('jwt', userCred);
+      data.append('wptba_nonce', wptba_nonce);
+      data.append('action', 'wptbaAddTag');
+      data.append('tagId', tagId);
+      data.append('postId', id.value);
+      fetch(wptba_ajax_url, {
+        method: 'POST',
+        body: data
+      }).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        if (response == '0' || response == 0) {
+          emit('logout');
+          return;
+        }
+
+        if (response == null || response == 'null') {
+          return;
+        }
+
+        getTags();
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    }
+
+    function showtooltip(id, status) {
+      var tt = document.getElementById(id + 'tt');
+
+      if (status === true) {
+        tt.classList.remove('hidden');
+      }
+
+      if (status === false) {
+        tt.classList.add('hidden');
+      }
     }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
@@ -18464,6 +18508,8 @@ __webpack_require__.r(__webpack_exports__);
       getTaggableUser: getTaggableUser,
       createInitials: createInitials,
       removeTag: removeTag,
+      addTag: addTag,
+      showtooltip: showtooltip,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
       onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted
     };
@@ -19448,31 +19494,22 @@ var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 );
 
 var _hoisted_7 = [_hoisted_6];
-
-var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "px-4 py-2"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-  "class": "w-full border border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-400 px-2 py-2 rounded focus:outline-none text-gray-500 dark:text-gray-400"
-})], -1
-/* HOISTED */
-);
-
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "px-4 py-2"
-}, null, -1
-/* HOISTED */
-);
-
-var _hoisted_10 = {
+var _hoisted_8 = {
+  key: 0,
+  "class": "px-4 py-2 flex flex-row items-center flex-start flex-wrap justify-center"
+};
+var _hoisted_9 = ["onMouseenter", "onMouseleave", "onClick"];
+var _hoisted_10 = ["id"];
+var _hoisted_11 = {
   "class": "tag-area rounded-lg flex flex-row justify-end p-2"
 };
-var _hoisted_11 = {
+var _hoisted_12 = {
   key: 0,
   "class": "flex flex-row"
 };
-var _hoisted_12 = ["onClick"];
+var _hoisted_13 = ["onClick"];
 
-var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "fill-rule": "evenodd",
   d: "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z",
   "clip-rule": "evenodd"
@@ -19480,9 +19517,9 @@ var _hoisted_13 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_14 = [_hoisted_13];
+var _hoisted_15 = [_hoisted_14];
 
-var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   "class": "h-5 w-5 inline fill-white",
   viewBox: "0 0 20 20",
@@ -19493,7 +19530,7 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_16 = [_hoisted_15];
+var _hoisted_17 = [_hoisted_16];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -19503,9 +19540,34 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $setup.openAddTagDialog = !$setup.openAddTagDialog;
     })
-  }, _hoisted_7))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Area "), _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" List Area "), _hoisted_9])], 512
+  }, _hoisted_7))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" List Area "), $setup.taggableUsers.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggableUsers, function (taggableUser) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+      key: taggableUser.id,
+      onMouseenter: function onMouseenter($event) {
+        return $setup.showtooltip(taggableUser.id, true);
+      },
+      onMouseleave: function onMouseleave($event) {
+        return $setup.showtooltip(taggableUser.id, false);
+      },
+      onClick: function onClick($event) {
+        return $setup.addTag(taggableUser.id);
+      },
+      "class": "bg-blue-500 rounded-full text-white w-12 h-12 cursor-pointer m-2 flex justify-center items-center relative"
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggableUser.name)), 1
+    /* TEXT */
+    ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" tooltip "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+      id: taggableUser.id + 'tt',
+      "class": "absolute text-xs -top-7 bg-gray-100 shadow-sm dark:bg-gray-800 text-gray-600 dark:text-gray-400 min-w-max p-1 rounded hidden backdrop-blur"
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(taggableUser.name), 9
+    /* TEXT, PROPS */
+    , _hoisted_10), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" tooltip ends ")], 40
+    /* PROPS, HYDRATE_EVENTS */
+    , _hoisted_9);
+  }), 128
+  /* KEYED_FRAGMENT */
+  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [$setup.taggedUsers.length != 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggedUsers, function (taggedUser) {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [$setup.taggedUsers.length != 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_12, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggedUsers, function (taggedUser) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       key: taggedUser.id,
       "class": "bg-blue-500 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer mr-2 relative"
@@ -19517,9 +19579,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "h-5 w-5 absolute -top-1 -right-1 cursor-pointer bg-blue-500 rounded-full",
       viewBox: "0 0 20 20",
       fill: "currentColor"
-    }, _hoisted_14, 8
+    }, _hoisted_15, 8
     /* PROPS */
-    , _hoisted_12)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggedUser.name)), 1
+    , _hoisted_13)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggedUser.name)), 1
     /* TEXT */
     )]);
   }), 128
@@ -19529,7 +19591,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $setup.openAddTagDialog = !$setup.openAddTagDialog;
     }),
     "class": "bg-blue-700 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer"
-  }, _hoisted_16)])]);
+  }, _hoisted_17)])]);
 }
 
 /***/ }),
