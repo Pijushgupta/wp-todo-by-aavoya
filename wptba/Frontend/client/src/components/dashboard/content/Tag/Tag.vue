@@ -9,7 +9,7 @@
 					</div>
 				
 					<!-- List Area -->
-					<div v-if="taggableUsers.length >0" class="px-4 py-2  flex flex-row items-center flex-start flex-wrap justify-center">
+					<div v-if="taggableUsers.length > 0" class="px-4 py-2  flex flex-row items-center flex-start flex-wrap justify-center">
 						<div 
 						v-for="taggableUser in taggableUsers" 
 						:key="taggableUser.id" 
@@ -26,6 +26,9 @@
 							</div>
 							<!-- tooltip ends -->
 						</div>
+					</div>
+					<div v-if="taggableUsers.length <= 0" class="px-4 py-2  flex flex-row items-center flex-start flex-wrap justify-center text-gray-500 dark:text-gray-400">
+						No other users 
 					</div>
 				</div>
 		</div>
@@ -151,8 +154,10 @@ function getTags() {
  * Converting Tag id to user and storing 
  */
 function getTaggedUsers() {
-	if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
 	taggedUsers.value = [];
+	
+	if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
+	
 	for (let i = 0; i < tags.value.length; i ++ ){
 		for (let j = 0; j < users.value.length; j ++ ){
 			if (users.value[j].id == tags.value[i].id) {
@@ -247,6 +252,7 @@ function removeTag(tagId) {
 		.then(response => {
 			
 			if (response == true || response == 'true') {
+				
 				getTags();
 				
 				return;

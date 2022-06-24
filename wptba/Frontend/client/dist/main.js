@@ -18350,8 +18350,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
     function getTaggedUsers() {
-      if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
       taggedUsers.value = [];
+      if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
 
       for (var i = 0; i < tags.value.length; i++) {
         for (var j = 0; j < users.value.length; j++) {
@@ -19501,15 +19501,19 @@ var _hoisted_8 = {
 var _hoisted_9 = ["onMouseenter", "onMouseleave", "onClick"];
 var _hoisted_10 = ["id"];
 var _hoisted_11 = {
-  "class": "tag-area rounded-lg flex flex-row justify-end p-2"
+  key: 1,
+  "class": "px-4 py-2 flex flex-row items-center flex-start flex-wrap justify-center text-gray-500 dark:text-gray-400"
 };
 var _hoisted_12 = {
+  "class": "tag-area rounded-lg flex flex-row justify-end p-2"
+};
+var _hoisted_13 = {
   key: 0,
   "class": "flex flex-row"
 };
-var _hoisted_13 = ["onClick"];
+var _hoisted_14 = ["onClick"];
 
-var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
+var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
   "fill-rule": "evenodd",
   d: "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z",
   "clip-rule": "evenodd"
@@ -19517,9 +19521,9 @@ var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_15 = [_hoisted_14];
+var _hoisted_16 = [_hoisted_15];
 
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
+var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   "class": "h-5 w-5 inline fill-white",
   viewBox: "0 0 20 20",
@@ -19530,7 +19534,7 @@ var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_17 = [_hoisted_16];
+var _hoisted_18 = [_hoisted_17];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -19565,9 +19569,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     , _hoisted_9);
   }), 128
   /* KEYED_FRAGMENT */
-  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 512
+  ))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.taggableUsers.length <= 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, " No other users ")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])], 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [$setup.taggedUsers.length != 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_12, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggedUsers, function (taggedUser) {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $setup.openAddTagDialog]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [$setup.taggedUsers.length != 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_13, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.taggedUsers, function (taggedUser) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       key: taggedUser.id,
       "class": "bg-blue-500 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer mr-2 relative"
@@ -19579,9 +19583,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "h-5 w-5 absolute -top-1 -right-1 cursor-pointer bg-blue-500 rounded-full",
       viewBox: "0 0 20 20",
       fill: "currentColor"
-    }, _hoisted_15, 8
+    }, _hoisted_16, 8
     /* PROPS */
-    , _hoisted_13)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggedUser.name)), 1
+    , _hoisted_14)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.createInitials(taggedUser.name)), 1
     /* TEXT */
     )]);
   }), 128
@@ -19591,7 +19595,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $setup.openAddTagDialog = !$setup.openAddTagDialog;
     }),
     "class": "bg-blue-700 rounded-full text-white w-10 h-10 flex items-center justify-center cursor-pointer"
-  }, _hoisted_17)])]);
+  }, _hoisted_18)])]);
 }
 
 /***/ }),
