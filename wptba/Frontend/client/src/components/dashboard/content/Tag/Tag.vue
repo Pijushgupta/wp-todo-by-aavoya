@@ -86,7 +86,8 @@ function getAllUser() {
 		.then(res => res.json())
 		.then(res => {
 			
-			if (res == 0 || res == '0') {
+			if (res === 0 || res === '0') {
+				
 				emit('logout');
 				return;
 			}
@@ -127,13 +128,15 @@ function getTags() {
 		.then(res => res.json())
 		.then(res => {
 			
-
-			if (res == 0 || res == '0') {	
+			
+			if (res === 0 || res === '0') {	
+				
 				emit('logout');
+				
 				return;
 			}
 
-			if (res == null || res == 'null') {
+			if (res === null || res === 'null') {
 				tags.value = [];
 				
 			} else {

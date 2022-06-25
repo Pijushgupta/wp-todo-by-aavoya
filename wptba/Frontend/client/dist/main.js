@@ -18293,7 +18293,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        if (res == 0 || res == '0') {
+        if (res === 0 || res === '0') {
           emit('logout');
           return;
         }
@@ -18327,12 +18327,12 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (res) {
-        if (res == 0 || res == '0') {
+        if (res === 0 || res === '0') {
           emit('logout');
           return;
         }
 
-        if (res == null || res == 'null') {
+        if (res === null || res === 'null') {
           tags.value = [];
         } else {
           tags.value = res;

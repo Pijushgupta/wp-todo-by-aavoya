@@ -4,6 +4,8 @@ namespace Wptba\Frontend;
 
 if (!defined('ABSPATH')) exit;
 
+use DOTNET;
+use JsonException;
 use Wptba\Common\Officer;
 
 class Posts
@@ -44,9 +46,19 @@ class Posts
 		 */
 		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) wp_die();
 
+		/**
+		 * Validating the JWT
+		 */
 		$userID = Officer::validateRequest($_POST);
-		if (gettype($userID) != 'integer') wp_die();
+		if (gettype($userID) != 'integer') {
 
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * Getting posts belongs to this user
+		 */
 		$posts = get_posts(array(
 			'author' => $userID,
 			'post_type' => 'wp_todo_board',
@@ -56,11 +68,42 @@ class Posts
 			'order' => 'DESC'
 		));
 
+		/**
+		 * Getting tagged posts for this user
+		 */
+		$postsInTerms = get_posts(array(
+			'post_type' => 'wp_todo_board',
+			'post_status' => 'publish',
+			'post_per_page' => -1,
+
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'wp_todo_board_tag',
+					'terms' => sanitize_text_field($userID),
+					'field' => 'slug'
+				)
+			)
+
+		));
+
+		/**
+		 * Merging the posts
+		 */
+		$posts = array_merge($posts, $postsInTerms);
+
+
+		/**
+		 * Checking if user having any posts or not.
+		 */
 		if (empty($posts)) {
 			echo json_encode('null');
 			wp_die();
 		}
 
+
+		/**
+		 * Simplifying the post array 
+		 */
 		$posts = array_map(function ($post) {
 			return array(
 				'id' => $post->ID,
@@ -69,7 +112,14 @@ class Posts
 			);
 		}, $posts);
 
+		/**
+		 * Sending the posts back to client 
+		 */
 		echo json_encode($posts);
+
+		/**
+		 * Terminating the process
+		 */
 		wp_die();
 	}
 
@@ -139,8 +189,11 @@ class Posts
 
 		/**
 		 * Checking if post belongs to user
+		 * or its associated with any user tag
 		 */
-		if ($userID != get_post_field('post_author', $post_id)) wp_die();
+		if ($userID != get_post_field('post_author', $post_id) && has_term(sanitize_text_field($userID), 'wp_todo_board_tag', $post_id) == false) {
+			wp_die();
+		}
 
 		$meta = (array)json_decode(str_replace('\\', '', $_POST['meta']), true);
 
