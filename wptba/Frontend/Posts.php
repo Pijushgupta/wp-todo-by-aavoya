@@ -4,8 +4,7 @@ namespace Wptba\Frontend;
 
 if (!defined('ABSPATH')) exit;
 
-use DOTNET;
-use JsonException;
+
 use Wptba\Common\Officer;
 
 class Posts
