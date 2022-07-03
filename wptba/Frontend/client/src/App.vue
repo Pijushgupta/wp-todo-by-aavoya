@@ -1,5 +1,5 @@
 <script setup>
-import {ref, watch } from 'vue';
+import {ref, watch , onMounted} from 'vue';
 import Login from './components/authentication/Login.vue';
 import Register from './components/authentication/Register.vue';
 import ForgotPassword from './components/authentication/Forgot.vue';
@@ -21,14 +21,29 @@ const jwt = ref('');
 
 
 
+const logo = ref(false);
 
-const randomNumber = (max) => {
-	return Math.floor(Math.random() * max);
+
+
+
+const getlogo = () => {
+	const data = new FormData();
+
+	data.append('wptba_nonce', wptba_nonce);
+	data.append('action', 'wptbaGetLogo');
+
+	fetch(wptba_ajax_url, {
+		method: 'POST',
+		body:data
+	})
+		.then(res => res.json())
+		.then(res => {
+			logo.value = res;
+			
+		})
+	.catch(err=>console.log(err));
+
 }
-
-
-const logo = ref('https://randomuser.me/api/portraits/women/'+randomNumber(100)+'.jpg');
-
 
 
 /**
@@ -78,25 +93,30 @@ function toggleComponent(value) {
 }
 function logout(){
 	localStorage.removeItem('jwt');
+	localStorage.removeItem('darkMode');
 	dealUser.value = 0;
 }
+
+onMounted(() => {
+	getlogo();
+});
 </script>
 
 <template>
 <div>
 	<Login 
-	v-if="dealUser == 0" 
+	v-if="dealUser == 0 && logo != false" 
 	@toggleComponent="toggleComponent" 
 	@logout="logout"
 	v-bind:Logo="logo"
 	/>
 	<Register 
-	v-if="dealUser == 1" 
+	v-if="dealUser == 1 && logo != false" 
 	@toggleComponent="toggleComponent" 
 	v-bind:Logo="logo"
 	/>
 	<ForgotPassword
-		v-if="dealUser == 2"
+		v-if="dealUser == 2 && logo != false"
 		@toggleComponent="toggleComponent" 
 		v-bind:Logo="logo"
 	/>

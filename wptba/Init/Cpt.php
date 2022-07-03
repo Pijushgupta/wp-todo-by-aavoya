@@ -35,9 +35,9 @@ final class Cpt
 				'public' => true,
 				'exclude_from_search' => true, // When a search is conducted through search.php, should it be excluded?
 				'publicly_queryable' => true, // When a parse_request() search is conducted, should it be included?
-				'show_ui' => true, // Should the primary admin menu be displayed?
-				'show_in_nav_menus' => true, // Should it show up in Appearance > Menus?
-				'show_in_menu' => true, // This inherits from show_ui, and determines *where* it should be displayed in the admin
+				'show_ui' => false, // Should the primary admin menu be displayed?
+				'show_in_nav_menus' => false, // Should it show up in Appearance > Menus?
+				'show_in_menu' => false, // This inherits from show_ui, and determines *where* it should be displayed in the admin
 				'show_in_admin_bar' => false, // Should it show up in the toolbar when a user is logged in?
 				'has_archive' => false,
 				'rewrite' => false
@@ -65,9 +65,9 @@ final class Cpt
 				'public' => true,
 				'exclude_from_search' => true, // When a search is conducted through search.php, should it be excluded?
 				'publicly_queryable' => true, // When a parse_request() search is conducted, should it be included?
-				'show_ui' => true, // Should the primary admin menu be displayed?
-				'show_in_nav_menus' => true, // Should it show up in Appearance > Menus?
-				'show_in_menu' => true, // This inherits from show_ui, and determines *where* it should be displayed in the admin
+				'show_ui' => false, // Should the primary admin menu be displayed?
+				'show_in_nav_menus' => false, // Should it show up in Appearance > Menus?
+				'show_in_menu' => false, // This inherits from show_ui, and determines *where* it should be displayed in the admin
 				'show_in_admin_bar' => false, // Should it show up in the toolbar when a user is logged in?
 				'has_archive' => false,
 				'rewrite' => false
@@ -99,9 +99,9 @@ final class Cpt
 				'description' => 'Wp todo board tag, to hold user id as Tag',
 				'public' => true,
 				'hierarchical' => false,
-				'show_ui' => true,
-				'show_in_menu' => true,
-				'show_in_nav_menus' => true,
+				'show_ui' => false,
+				'show_in_menu' => false,
+				'show_in_nav_menus' => false,
 			)
 		);
 	}

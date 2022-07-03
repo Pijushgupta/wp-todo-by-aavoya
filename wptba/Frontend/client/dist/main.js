@@ -17447,12 +17447,23 @@ __webpack_require__.r(__webpack_exports__);
      */
 
     var jwt = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
+    var logo = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
 
-    var randomNumber = function randomNumber(max) {
-      return Math.floor(Math.random() * max);
+    var getlogo = function getlogo() {
+      var data = new FormData();
+      data.append('wptba_nonce', wptba_nonce);
+      data.append('action', 'wptbaGetLogo');
+      fetch(wptba_ajax_url, {
+        method: 'POST',
+        body: data
+      }).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        logo.value = res;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     };
-
-    var logo = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('https://randomuser.me/api/portraits/women/' + randomNumber(100) + '.jpg');
     /**
      * This function is responsible for Loading proper
      * login template based on cookie stored in localStorage
@@ -17460,6 +17471,7 @@ __webpack_require__.r(__webpack_exports__);
      * @param {string} jwt
      * @return {void}
      */
+
 
     if (!localStorage.getItem('jwt')) {
       /**
@@ -17499,18 +17511,23 @@ __webpack_require__.r(__webpack_exports__);
 
     function logout() {
       localStorage.removeItem('jwt');
+      localStorage.removeItem('darkMode');
       dealUser.value = 0;
     }
 
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+      getlogo();
+    });
     var __returned__ = {
       dealUser: dealUser,
       jwt: jwt,
-      randomNumber: randomNumber,
       logo: logo,
+      getlogo: getlogo,
       toggleComponent: toggleComponent,
       logout: logout,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
       watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch,
+      onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted,
       Login: _components_authentication_Login_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
       Register: _components_authentication_Register_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
       ForgotPassword: _components_authentication_Forgot_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
@@ -18537,20 +18554,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [$setup.dealUser == 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Login"], {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [$setup.dealUser == 0 && $setup.logo != false ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Login"], {
     key: 0,
     onToggleComponent: $setup.toggleComponent,
     onLogout: $setup.logout,
     Logo: $setup.logo
   }, null, 8
   /* PROPS */
-  , ["Logo"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.dealUser == 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Register"], {
+  , ["Logo"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.dealUser == 1 && $setup.logo != false ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["Register"], {
     key: 1,
     onToggleComponent: $setup.toggleComponent,
     Logo: $setup.logo
   }, null, 8
   /* PROPS */
-  , ["Logo"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.dealUser == 2 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["ForgotPassword"], {
+  , ["Logo"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.dealUser == 2 && $setup.logo != false ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["ForgotPassword"], {
     key: 2,
     onToggleComponent: $setup.toggleComponent,
     Logo: $setup.logo

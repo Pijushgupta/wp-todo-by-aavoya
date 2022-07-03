@@ -35,6 +35,9 @@ class Posts
 
 		add_action('wp_ajax_nopriv_wptbaAddTag', array(self::$globalNamespace, 'addTag'));
 		add_action('wp_ajax_wptbaAddTag', array(self::$globalNamespace, 'addTag'));
+
+		add_action('wp_ajax_nopriv_wptbaGetLogo', array(self::$globalNamespace, 'getLogo'));
+		add_action('wp_ajax_wptbaGetLogo', array(self::$globalNamespace, 'getLogo'));
 	}
 
 	public static function getPosts()
@@ -380,6 +383,35 @@ class Posts
 		 * and terminating the flow with wp_die();
 		 */
 		echo json_encode(true);
+		wp_die();
+	}
+
+	public static function getLogo()
+	{
+		/**
+		 * verifying nonce 
+		 */
+		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
+			wp_die();
+		}
+
+		$genders = ['men', 'women'];
+		$randomImage = 'https://randomuser.me/api/portraits/' . $genders[rand(0, 1)] . '/' . rand(0, 100) . '.jpg';
+		$attachmentID = get_option('wptba_logo');
+
+		if ($attachmentID == false) {
+			echo json_encode($randomImage);
+			wp_die();
+		}
+
+		$imageUrl = wp_get_attachment_thumb_url($attachmentID);
+
+		if (!$imageUrl) {
+			echo json_encode($randomImage);
+			wp_die();
+		}
+
+		echo json_encode($imageUrl);
 		wp_die();
 	}
 }

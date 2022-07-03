@@ -47,7 +47,7 @@ function getDarkMode(){
 			body: data
 		})
 		.then(response => response.json())
-		.then(response=>{
+		.then(response =>{
 			localStorage.setItem('darkMode',response);
 			window.location.reload();
 		})

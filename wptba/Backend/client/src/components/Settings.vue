@@ -4,6 +4,35 @@
 		<ul>
 			<li class="border-b last:border-b-0 p-4">
 				<div class="flex flex-row justify-between w-full items-center">
+					<div >Logo</div>
+					<div >
+						
+						<div class="rounded-full w-14 h-14 bg-gray-400 flex justify-center items-center text-gray-200 cursor-pointer" v-on:click="logoPopup = !logoPopup">
+							<!-- if no photo -->
+							<div v-if="attachmentId == false">
+								Photo
+							</div>
+							<!-- ends -->
+							<!-- if photo available -->
+							<div v-if="attachmentId != false && attachmentUrl" class="rounded-full overflow-hidden">
+								<img v-bind:src="attachmentUrl" />
+							</div>
+							<!-- ends -->
+						</div>
+						
+							
+							
+							<!-- popup -->
+							<div v-if="logoPopup == true">
+								 <Media @logoPopup = "logoPopup = !logoPopup" v-bind:post_id=" parseInt(attachmentId) " @imageUrl='updateImageUrl'/>
+							</div>
+							<!-- popup ends -->
+						
+					</div>
+				</div>
+			</li>
+			<li class="border-b last:border-b-0 p-4">
+				<div class="flex flex-row justify-between w-full items-center">
 					<div >Secret Key for JWT </div>
 					<div >
 						<span class="px-2">{{key}}</span>
@@ -36,11 +65,15 @@
 </div>
 </template>
 <script setup>
-import {ref, watch, onMounted} from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import Media from './media/Media.vue';
+
 const key 				= ref('');
 const autoLogOut	= ref('');
 const autoApproveUser = ref(false);
-
+const logoPopup = ref(false);
+const attachmentId = ref(false);
+const attachmentUrl = ref(false);
 
 
  function getKey() {
@@ -62,6 +95,7 @@ const autoApproveUser = ref(false);
 	.catch(err => console.log(err));
 	
 }
+
 function regenerateKey(){
 		const data = new FormData()
 		data.append('action', 'setKeyWptba');
@@ -79,6 +113,7 @@ function regenerateKey(){
 		})
 		.catch(err => console.log(err));
 }
+
 function getAutoLogOut(){
 	const data = new FormData()
 	data.append('action', 'getAutoLogOutWptba');
@@ -96,6 +131,7 @@ function getAutoLogOut(){
 	})
 	.catch(err => console.log(err));
 }
+
 function setAutoLogOut(){
 	const data = new FormData()
 	data.append('action', 'setAutoLogOutWptba');
@@ -129,6 +165,7 @@ function getApproveUser(){
 	})
 	.catch(err => console.log(err));
 }
+
 function setApproveUser() {
 	autoApproveUser.value = !autoApproveUser.value;
 	console.log('setting', autoApproveUser.value);
@@ -148,10 +185,57 @@ function setApproveUser() {
 	.catch(err => console.log(err));
 }
 
+function getAttachmentId() {
+	const data = new FormData();
+	data.append('action', 'wptbaGetAttchmentId');
+	data.append('wptba_backend_nonce', wptba_backend_nonce);
+	fetch(wptba_backend_url, {
+		method: 'POST',
+		body: data
+	})
+		.then(response => response.json())
+		.then(response => { 
+			if (response == false || response == 'false') {
+				return;
+			}
+			attachmentId.value = response;
+			getAttachment();
+		})
+		.catch(err => console.log(err));
+}
+
+/**
+ * getting image url from the attachment ID
+ */
+function getAttachment() {
+	if (attachmentId.value == false) { return}
+
+	const data = new FormData();
+	data.append('attchmentId', attachmentId.value);
+	data.append('action', 'wptbaGetAttachment');
+	data.append('wptba_backend_nonce', wptba_backend_nonce);
+	fetch(wptba_backend_url, {
+		'method': 'POST',
+		body: data
+	})
+	.then(r => r.json())
+	.then(r => {
+		attachmentUrl.value = r;
+	})
+	.catch(err =>console.log(err));
+	
+}
+
+function updateImageUrl(url) {
+	attachmentUrl.value = url;
+	
+}
+
 onMounted(() => {
 	getKey();
 	getAutoLogOut();
 	getApproveUser();
+	getAttachmentId();
 });
 
 

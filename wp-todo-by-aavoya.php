@@ -27,6 +27,7 @@ use Wptba\Init\Userrole;
 use Wptba\Init\Key;
 use Wptba\Init\Alo;
 use Wptba\Init\Aau;
+
 use Wptba\Backend\KeyAjax;
 use Wptba\Backend\AloAjax;
 use Wptba\Backend\AauAjax;
@@ -50,6 +51,7 @@ add_action('plugins_loaded', function () {
 	AloAjax::init();
 	AauAjax::init();
 	Wptba\Backend\User::activate();
+	Wptba\Backend\Posts::activate();
 	Ui::activate();
 
 	//Frontend 
