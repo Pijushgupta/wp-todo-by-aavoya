@@ -18287,7 +18287,9 @@ __webpack_require__.r(__webpack_exports__);
         emit = _ref.emit;
     expose();
     var props = __props;
-    var id = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.postToLoad);
+    var id = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () {
+      return props.postToLoad;
+    });
     var openAddTagDialog = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
     var userCred = localStorage.getItem('jwt');
     var users = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
@@ -18505,8 +18507,10 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
 
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(id, function () {
+      getAllUser();
+    });
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-      if (id.value == false) return;
       getAllUser();
     });
     var __returned__ = {
@@ -18528,7 +18532,9 @@ __webpack_require__.r(__webpack_exports__);
       addTag: addTag,
       showtooltip: showtooltip,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
-      onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted
+      onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted,
+      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch,
+      computed: vue__WEBPACK_IMPORTED_MODULE_0__.computed
     };
     Object.defineProperty(__returned__, '__isScriptSetup', {
       enumerable: false,

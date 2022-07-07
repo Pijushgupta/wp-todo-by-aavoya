@@ -14,6 +14,11 @@ final class Cpt
 		self::createUser();
 	}
 
+	/**
+	 * createBoard
+	 * Custom Post type of Board to store user Notes
+	 * @return void
+	 */
 	public static function createBoard()
 	{
 		if (!post_type_exists('wp_todo_board')) {
@@ -44,6 +49,11 @@ final class Cpt
 			));
 		}
 	}
+	/**
+	 * createUser
+	 * Custom Post type to hold temporary user information, before activation.
+	 * @return void
+	 */
 	public static function createUser()
 	{
 		if (!post_type_exists('wp_todo_user')) {
@@ -75,6 +85,13 @@ final class Cpt
 		}
 	}
 
+	/**
+	 * createTaxonomy
+	 * Custom taxonomy: non hierarchical taxonomy, terms will be same as user id
+	 * This to provider post sharing feature between users
+	 * related to post type board
+	 * @return void
+	 */
 	public static function createTaxonomy()
 	{
 		if (taxonomy_exists('wp_todo_board_tag')) return;

@@ -48,14 +48,16 @@
 </template>
 <script setup>
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted , watch, computed } from 'vue';
 const props = defineProps({
 	postToLoad:[Number,Boolean]
 })
 const emit = defineEmits({
 	logout: String
 });
-const id  = ref(props.postToLoad);
+const id = computed(() => {
+	return props.postToLoad;
+});
 const openAddTagDialog = ref(false);
 const userCred = localStorage.getItem('jwt');
 
@@ -321,9 +323,15 @@ function showtooltip(id,status) {
 	
 }
 
+watch(id, () => {
+	getAllUser();
+})
+
+
 
 onMounted(() => {
-	if(id.value == false) return;
+	
 	getAllUser();
 });
+
 </script>

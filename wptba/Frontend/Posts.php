@@ -237,6 +237,11 @@ class Posts
 		wp_die();
 	}
 
+	/**
+	 * getTags
+	 *
+	 * @return void
+	 */
 	public static function getTags()
 	{
 
