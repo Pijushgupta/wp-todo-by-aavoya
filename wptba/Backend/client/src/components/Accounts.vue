@@ -71,6 +71,8 @@ const deleteUser = (postId) => {
 	data.append('action', 'wptbaUserPostDelete');
 	data.append('wptba_backend_nonce', wptba_backend_nonce);
 	data.append('postId', postID);
+
+	
 }
 
 onMounted(() => {
