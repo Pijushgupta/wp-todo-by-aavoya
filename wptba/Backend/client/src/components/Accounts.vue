@@ -7,7 +7,9 @@
 					<div>{{user['name']}}</div>
 					<div>{{user['email']}}</div>
 				</div>
-				<div>
+				<div class="flex flex-row ">
+					<button class="border rounded px-4 py-2 mr-2 bg-gray-500 text-white" @click="deleteUser(user['id'])">Delete</button>
+				
 					<button class="border rounded px-4 py-2 bg-blue-500 text-white" @click="addUser(user['id'])">Activate</button>
 				</div>
 			</div>
@@ -61,6 +63,14 @@ const addUser = (postId) => {
 			}
 		 })
 		.catch(err => console.log(err));
+}
+
+const deleteUser = (postId) => {
+	const data = new FormData();
+	
+	data.append('action', 'wptbaUserPostDelete');
+	data.append('wptba_backend_nonce', wptba_backend_nonce);
+	data.append('postId', postID);
 }
 
 onMounted(() => {

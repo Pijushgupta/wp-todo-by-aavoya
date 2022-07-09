@@ -182,4 +182,8 @@ class User
 			<p>Password: ' . $password . '</p>'
 		);
 	}
+
+	public static function wptbaUserPostDelete()
+	{
+	}
 }
