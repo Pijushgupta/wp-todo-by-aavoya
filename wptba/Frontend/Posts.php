@@ -227,7 +227,10 @@ class Posts
 		/**
 		 * Checking if post belongs to user
 		 */
-		if ($userID != get_post_field('post_author', $post_id)) wp_die();
+		if ($userID != get_post_field('post_author', $post_id)) {
+			echo json_encode(null);
+			wp_die();
+		}
 
 
 

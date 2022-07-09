@@ -187,7 +187,7 @@ function setApproveUser() {
 
 function getAttachmentId() {
 	const data = new FormData();
-	data.append('action', 'wptbaGetAttchmentId');
+	data.append('action', 'wptbaGetAttachmentId');
 	data.append('wptba_backend_nonce', wptba_backend_nonce);
 	fetch(wptba_backend_url, {
 		method: 'POST',

@@ -1,15 +1,14 @@
 <template>
-	<header class="dark:bg-gray-800 dark:text-gray-400 bg-gray-200 text-gray-500 dark:border-b-black border-b-gray-400 font-semibold ">
+	<header class="dark:bg-gray-900 dark:text-gray-400 bg-gray-white border-b border-gray-200 text-gray-500 dark:border-gray-800 font-semibold ">
 		<div class="container-full">
 			<div class="flex justify-between items-center py-2 px-5">
 				<div class="w-6/12">Wp Todo</div>
 				
 				<div class="w-6/12 flex justify-end relative">
-					<div class="rounded-full dark:bg-gray-900 bg-gray-400 p-1 flex justify-center items-center cursor-pointer " @click="showPreference = !showPreference">
+					<div class="rounded-full dark:bg-gray-900 bg-gray-white border border-gray-200 dark:border-gray-800 p-1 flex justify-center items-center cursor-pointer " @click="showPreference = !showPreference">
 						<span class="flex justify-center items-center w-7 h-7">{{userLogo}}</span>
-						
 					</div>
-					<div v-show="showPreference" class="menu absolute top-14 w-56 bg-white dark:bg-gray-900 border dark:border-gray-800 cursor-default rounded-lg font-normal z-10 ">
+					<div v-show="showPreference" class="menu absolute top-14 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 cursor-default rounded-lg font-normal z-10 ">
 							<ul>
 								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">{{displayName}}</li>
 								<li class="flex flex-row justify-between cursor-pointer px-4 pt-2 last:pb-2 ">

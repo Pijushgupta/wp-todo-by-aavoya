@@ -7,13 +7,14 @@
 .wptodobyaavoya{
 	font-family: 'Source Sans Pro';
 }
-.sidebar-posts-height{
-	height: calc(100vh - 52px);
+.sidebar-posts-height, .content-area{
+	height: calc(100vh - 54px);
 }
 
 
 .tw-scroll-bar::-webkit-scrollbar{
 	width: 7px;
+	height: 7px;
 }
 
 
@@ -37,6 +38,7 @@
 
 .dark .tw-scroll-bar::-webkit-scrollbar{
 	width: 7px;
+	height: 7px;
 }
 
 .dark .tw-scroll-bar::-webkit-scrollbar-track {

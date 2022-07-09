@@ -626,6 +626,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .flex-row {
   flex-direction: row;
 }
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
 .flex-col {
   flex-direction: column;
 }
@@ -644,8 +647,20 @@ Ensure the default browser behavior of the `hidden` attribute.
 .justify-between {
   justify-content: space-between;
 }
+.overflow-x-auto {
+  overflow-x: auto;
+}
 .overflow-y-auto {
   overflow-y: auto;
+}
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+.whitespace-nowrap {
+  white-space: nowrap;
 }
 .rounded-xl {
   border-radius: 0.75rem;
@@ -701,10 +716,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-border-opacity: 1;
   border-color: rgb(29 78 216 / var(--tw-border-opacity));
 }
-.border-b-gray-400 {
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(156 163 175 / var(--tw-border-opacity));
-}
 .bg-blue-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
@@ -719,14 +730,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .bg-transparent {
   background-color: transparent;
-}
-.bg-gray-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
-.bg-gray-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(156 163 175 / var(--tw-bg-opacity));
 }
 .bg-white {
   --tw-bg-opacity: 1;
@@ -743,6 +746,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
+}
+.bg-opacity-80 {
+  --tw-bg-opacity: 0.8;
 }
 .fill-white {
   fill: #fff;
@@ -881,13 +887,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 .wptodobyaavoya{
 	font-family: 'Source Sans Pro';
 }
-.sidebar-posts-height{
-	height: calc(100vh - 52px);
+.sidebar-posts-height, .content-area{
+	height: calc(100vh - 54px);
 }
 
 
 .tw-scroll-bar::-webkit-scrollbar{
 	width: 7px;
+	height: 7px;
 }
 
 
@@ -913,6 +920,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .dark .tw-scroll-bar::-webkit-scrollbar{
 	width: 7px;
+	height: 7px;
 }
 
 .dark .tw-scroll-bar::-webkit-scrollbar-track {
@@ -1054,10 +1062,6 @@ input:checked[type="checkbox"]:before {
 .dark .dark\:border-gray-800 {
   --tw-border-opacity: 1;
   border-color: rgb(31 41 55 / var(--tw-border-opacity));
-}
-.dark .dark\:border-b-black {
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 .dark .dark\:bg-gray-900 {
   --tw-bg-opacity: 1;

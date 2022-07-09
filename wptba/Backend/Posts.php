@@ -16,14 +16,14 @@ class Posts
 	public static function activate()
 	{
 		add_action('wp_ajax_wptbaUploadImage', array(self::$globalNamespace, 'uploadImage'));
-		add_action('wp_ajax_wptbaGetAttachment', array(self::$globalNamespace, 'getAttchment'));
-		add_action('wp_ajax_wptbaGetAttchmentId', array(self::$globalNamespace, 'getAttchmentId'));
+		add_action('wp_ajax_wptbaGetAttachment', array(self::$globalNamespace, 'getAttachment'));
+		add_action('wp_ajax_wptbaGetAttachmentId', array(self::$globalNamespace, 'getAttachmentId'));
 	}
 
 
 	/**
 	 * uploadImage
-	 * This function upload image
+	 * This method upload logo Image
 	 * @return void
 	 */
 	public static function uploadImage()
@@ -55,10 +55,8 @@ class Posts
 			wp_die();
 		}
 
-
-
 		/**
-		 * Creating attachment for the image to show it in the media
+		 * attachment arguments
 		 */
 		$attachment = array(
 			'post_mime_type' => $uploadStatus['type'],
@@ -67,18 +65,37 @@ class Posts
 			'post_status' => 'inherit',
 			'guid' => $uploadStatus['url']
 		);
+
+		/**
+		 * Creating attachment for the image to show it in the media
+		 */
 		$attachmentId = wp_insert_attachment($attachment, $uploadStatus['url']);
+
+		/**
+		 * creating attachment meta
+		 */
 		wp_update_attachment_metadata($attachmentId, wp_generate_attachment_metadata($attachmentId, $uploadStatus['file']));
 
+		/**
+		 * Finally updating adding/updating option('wptba_logo') 
+		 * with image attachment id
+		 */
 		update_option('wptba_logo', intval($attachmentId));
-		echo json_encode(wp_get_attachment_thumb_url($attachmentId));
 
+		/**
+		 * returning attachment(thumb - 150x150 - ideal for logo area)
+		 */
+		echo json_encode(sanitize_url(wp_get_attachment_thumb_url($attachmentId)));
+
+		/**
+		 * terminating script
+		 */
 		wp_die();
 	}
 
 	/**
 	 * checkIfImage
-	 * @param  mixed $imgBinary
+	 * @param  array $imgName
 	 * @return boolean
 	 */
 	public static function checkIfImage($imgName)
@@ -88,12 +105,13 @@ class Posts
 		return false;
 	}
 
+
 	/**
 	 * getAttchemnt
 	 *
 	 * @return void
 	 */
-	public static function getAttchment()
+	public static function getAttachment()
 	{
 		/**
 		 * Checking if the nonce is valid
@@ -105,17 +123,32 @@ class Posts
 			wp_die();
 		}
 
+		/**
+		 * Sanitizing attachment ID
+		 */
 		$attachmentId =  intval($_POST['attchmentId']);
 
+		/**
+		 * Logo url
+		 */
 		$imageUrl = wp_get_attachment_thumb_url($attachmentId);
 
-		echo json_encode($imageUrl);
+		/**
+		 *  returning the url to client
+		 */
+		echo json_encode(sanitize_url($imageUrl));
+
+		/**
+		 * Terminating script
+		 */
 		wp_die();
 	}
 
+
 	/**
-	 * getAttchmentId
-	 * 
+	 * getAttachmentId
+	 * Sending logo attachment id stored in option table 
+	 * option : 'wptba_logo'
 	 * @return void
 	 */
 	public static function getAttchmentId()
@@ -125,7 +158,14 @@ class Posts
 		 */
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
 
-		echo json_encode(get_option('wptba_logo'));
+		/**
+		 * returning id to client
+		 */
+		echo json_encode(intval(get_option('wptba_logo')));
+
+		/**
+		 * terminating script
+		 */
 		wp_die();
 	}
 }

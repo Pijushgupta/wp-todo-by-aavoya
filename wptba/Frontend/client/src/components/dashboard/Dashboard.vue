@@ -135,7 +135,11 @@ export default{
 			})
 				.then(response => response.json())
 				.then(response => {
-					if (response) { 
+					if (response == null || response == 'null'){
+						alert('Only orginal author can delete a board');
+					}
+
+					if (response != null && response != 'null' ) { 
 						this.posts = this.posts.filter(post => post.id !== postId);	
 						if (this.posts && this.posts[0]) { 
 							this.postsToLoad = this.posts[0].id;

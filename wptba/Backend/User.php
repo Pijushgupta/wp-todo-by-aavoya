@@ -13,6 +13,12 @@ class User
 		add_action('wp_ajax_wptbaPostToUser', array(self::$globalNamespace, 'postToUser'));
 	}
 
+	/**
+	 * getPendingUsers
+	 * This to get registered user(actually posts of post type of 'wp_todo_user') waiting
+	 * for approval
+	 * @return void
+	 */
 	public static function getPendingUsers()
 	{
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();

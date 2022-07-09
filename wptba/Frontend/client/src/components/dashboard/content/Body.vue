@@ -1,5 +1,5 @@
 <template>
-	<div class="dark:bg-gray-900 w-full p-2 content-area">
+	<div class="dark:bg-gray-900 w-full p-2 content-area overflow-x-hidden tw-scroll-bar ">
 		<form v-if="changePassword == true" class="absolute inset-0 w-full flex justify-center items-center z-10  backdrop-blur ">
 			<div class="w-72 md:w-1/5 flex flex-col border border-gray-200 dark:border-gray-800 rounded-lg dark:bg-gray-900 bg-gray-50">
 				
@@ -221,11 +221,16 @@ export default{
 				})
 
 		},
+
+		changeTitle() {
+			let documentTitle = document.querySelector('title');
+			documentTitle.text ="Wp todo by Aavoya.co";
+		}
 		
 	},
 	mounted(){
 		this.getMeta();
-	
+		this.changeTitle();
 	},
 
 	watch:{

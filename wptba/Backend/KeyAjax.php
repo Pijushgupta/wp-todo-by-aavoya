@@ -18,6 +18,11 @@ class KeyAjax
 		add_action('wp_ajax_getKetKeyWptba', array(self::$globalScopeName, 'getKetKeyWptba'));
 	}
 
+	/**
+	 * setKeyWptba
+	 * setting JWT encryption key
+	 * @return void
+	 */
 	public static function setKeyWptba()
 	{
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
@@ -28,6 +33,11 @@ class KeyAjax
 		wp_die();
 	}
 
+	/**
+	 * getKetKeyWptba
+	 * sending back the key after update 
+	 * @return void
+	 */
 	public static function getKetKeyWptba()
 	{
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
