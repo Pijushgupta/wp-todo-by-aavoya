@@ -84,6 +84,7 @@ function getAllUser() {
 	data.append('jwt', userCred);
 	data.append('wptba_nonce', wptba_nonce);
 	data.append('action', 'wptbaGetAllUsers');
+	data.append('post_Id', id.value);
 
 	fetch(wptba_ajax_url, {
 		method: 'POST',
@@ -167,13 +168,20 @@ function getTaggedUsers() {
 	
 	if (Array.isArray(tags.value) == false || tags.value.length == 0) return;
 	
-	for (let i = 0; i < tags.value.length; i ++ ){
-		for (let j = 0; j < users.value.length; j ++ ){
+	for (let i = 0; i < tags.value.length; i++){
+		
+		for (let j = 0; j < users.value.length; j++){
+			
 			if (users.value[j].id == tags.value[i].id) {
+
 				taggedUsers.value.push(users.value[j]);
+
 				break;
+
 			}
+
 		}
+
 	}	
 	//console.log(users.value);
 

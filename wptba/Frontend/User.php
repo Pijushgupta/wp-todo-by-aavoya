@@ -682,10 +682,18 @@ class User
 
 		/**
 		 * Getting all users except the logged(client side) in user
+		 * and if logged in user not the original author of the post then also excluding the original author
 		 */
+		$original_author = get_post_field('post_author', intval($_POST['post_Id']));
+		if ($userID != $original_author) {
+			$exclude = array($userID, $original_author);
+		} else {
+			$exclude = array($userID);
+		}
+
 		$users = get_users(array(
 			'role__in' => array('todoer'),
-			'exclude' => array($userID)
+			'exclude' => $exclude
 		));
 
 		/**

@@ -17490,7 +17490,6 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         userData.value = response;
-        console.log(response);
       })["catch"](function (err) {
         return console.log(err);
       });
@@ -17519,7 +17518,29 @@ __webpack_require__.r(__webpack_exports__);
       var data = new FormData();
       data.append('action', 'wptbaUserPostDelete');
       data.append('wptba_backend_nonce', wptba_backend_nonce);
-      data.append('postId', postID);
+      data.append('postId', postId);
+      fetch(wptba_backend_url, {
+        method: 'POST',
+        body: data
+      }).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        if (response == 1 || response == '1') {
+          deleteUserData(postId);
+        }
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    };
+
+    var deleteUserData = function deleteUserData(postID) {
+      userData.value = userData.value.filter(function (user) {
+        return user['id'] != postID;
+      });
+
+      if (userData.value.length == 0) {
+        userData.value = null;
+      }
     };
 
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
@@ -17530,8 +17551,10 @@ __webpack_require__.r(__webpack_exports__);
       pendingUser: pendingUser,
       addUser: addUser,
       deleteUser: deleteUser,
+      deleteUserData: deleteUserData,
       onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted,
-      ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref
+      ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
+      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch
     };
     Object.defineProperty(__returned__, '__isScriptSetup', {
       enumerable: false,

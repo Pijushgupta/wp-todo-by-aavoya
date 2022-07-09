@@ -22,7 +22,7 @@
 </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 const userData = ref(false);
 
 const  pendingUser = () => { 
@@ -40,7 +40,7 @@ const  pendingUser = () => {
 				response = null;
 			}
 			userData.value = response;
-			console.log(response);
+			
 			
 		})
 		.catch(err => console.log(err));
@@ -70,9 +70,32 @@ const deleteUser = (postId) => {
 	
 	data.append('action', 'wptbaUserPostDelete');
 	data.append('wptba_backend_nonce', wptba_backend_nonce);
-	data.append('postId', postID);
+	data.append('postId', postId);
 
+	fetch(wptba_backend_url, {
+		method: 'POST',
+		body:data
+	})
+		.then(response => response.json())
+		.then(response => {
+			
+			if (response == 1 || response == '1') {
+				deleteUserData(postId);
+			}
+		})
+		.catch(err => {
+			console.log(err);
+		})
 	
+
+
+}
+
+const deleteUserData = (postID) => {
+	userData.value = userData.value.filter(user => user['id'] != postID);
+	if (userData.value.length == 0) {
+		userData.value = null;
+	}
 }
 
 onMounted(() => {

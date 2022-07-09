@@ -11,6 +11,7 @@ class User
 	{
 		add_action('wp_ajax_wptbaGetPendingUsers', array(self::$globalNamespace, 'getPendingUsers'));
 		add_action('wp_ajax_wptbaPostToUser', array(self::$globalNamespace, 'postToUser'));
+		add_action('wp_ajax_wptbaUserPostDelete', array(self::$globalNamespace, 'userPostDelete'));
 	}
 
 	/**
@@ -61,7 +62,7 @@ class User
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
 
 		/**
-		 * Checking if the post id is provied or not 
+		 * Checking if the post id is provided or not 
 		 * We are converting post to user so we need to know the post id
 		 */
 		$userId = intval($_POST['postId']);
@@ -183,7 +184,50 @@ class User
 		);
 	}
 
-	public static function wptbaUserPostDelete()
+	/**
+	 * userPostDelete
+	 * This to delete user account request
+	 * @return void
+	 */
+	public static function userPostDelete()
 	{
+		/**
+		 * Checking if the nonce is valid
+		 */
+		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
+
+		/**
+		 * Checking if the post id is provied or not 
+		 * We are converting post to user so we need to know the post id
+		 */
+		$postId = intval($_POST['postId']);
+		if (!$postId) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+
+		/**
+		 * If unable to delete, terminate
+		 */
+		if (wp_delete_post($postId, true) == false) {
+			echo json_encode(0);
+			wp_die();
+		}
+
+		/**
+		 * delete post meta
+		 */
+		delete_post_meta($postId, 'wptba_user_post_meta');
+
+		/**
+		 * sending success code 
+		 */
+		echo json_encode(1);
+
+		/**
+		 * terminating script 
+		 */
+		wp_die();
 	}
 }

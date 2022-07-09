@@ -18315,6 +18315,7 @@ __webpack_require__.r(__webpack_exports__);
       data.append('jwt', userCred);
       data.append('wptba_nonce', wptba_nonce);
       data.append('action', 'wptbaGetAllUsers');
+      data.append('post_Id', id.value);
       fetch(wptba_ajax_url, {
         method: 'POST',
         body: data

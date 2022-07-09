@@ -72,9 +72,11 @@ class Posts
 
 		/**
 		 * Getting tagged posts for this user
+		 *
 		 */
 		$postsInTerms = get_posts(array(
 			'post_type' => 'wp_todo_board',
+			'author' => '-' . $userID, //excluding his/her original post, in case someone tagged him on his own post
 			'post_status' => 'publish',
 			'post_per_page' => -1,
 
@@ -281,13 +283,13 @@ class Posts
 		 * its working along with the 'getAllUsers' method in 
 		 * User.php(Frontend)
 		 */
-		if (!empty($tags)) {
-			for ($i = 0; $i < count($tags); $i++) {
-				if ($tags[$i]['id'] == $userID) {
-					unset($tags[$i]);
-				}
-			}
-		}
+		// if (!empty($tags)) {
+		// 	for ($i = 0; $i < count($tags); $i++) {
+		// 		if ($tags[$i]['id'] == $userID) {
+		// 			unset($tags[$i]);
+		// 		}
+		// 	}
+		// }
 
 		echo json_encode($tags);
 		wp_die();
@@ -319,6 +321,12 @@ class Posts
 		$post_id = intval($_POST['postId']);
 		$tag_id = sanitize_text_field($_POST['tagId']);
 
+		/**
+		 * Preventing user from tagging original author to its own post
+		 */
+		$original_author_id  = get_post_field('post_author', $post_id);
+		if ($original_author_id == $tag_id) wp_die();
+		/* end */
 
 		$status = has_term($tag_id, 'wp_todo_board_tag', $post_id);
 		if ($status == true) wp_die();
