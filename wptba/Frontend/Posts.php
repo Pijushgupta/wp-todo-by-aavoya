@@ -283,13 +283,12 @@ class Posts
 		 * its working along with the 'getAllUsers' method in 
 		 * User.php(Frontend)
 		 */
-		// if (!empty($tags)) {
-		// 	for ($i = 0; $i < count($tags); $i++) {
-		// 		if ($tags[$i]['id'] == $userID) {
-		// 			unset($tags[$i]);
-		// 		}
-		// 	}
-		// }
+		if (!empty($tags)) {
+			$tags_index = array_search($userID, $tags);
+			if ($tags_index) {
+				array_splice($tags, $tags_index, 1);
+			}
+		}
 
 		echo json_encode($tags);
 		wp_die();
