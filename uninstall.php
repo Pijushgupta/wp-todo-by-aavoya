@@ -11,7 +11,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 $argument = array(
 	'post_type' => 'wp_todo_user',
 	'post_per_page' => -1,
-	'numberposts' => -1
+
 );
 
 $unapprovedUsers = get_posts($argument);
@@ -34,16 +34,16 @@ unregister_post_type('wp_todo_user');
 $todoArgument = array(
 	'post_type' => 'wp_todo_board',
 	'post_per_page' => -1,
-	'numberposts' => -1
+
 );
 
 $todoPosts = get_posts($todoArgument);
 unset($todoArgument);
 
-if($todoPosts){
-	for($todoPosts as $todoPost){
-		delete_post_meta($todoPost->ID,'wp_todo_board_meta');
-		wp_delete_post( $todoPost->ID, true );
+if ($todoPosts) {
+	foreach ($todoPosts as $todoPost) {
+		delete_post_meta($todoPost->ID, 'wp_todo_board_meta');
+		wp_delete_post($todoPost->ID, true);
 	}
 }
 
@@ -69,7 +69,7 @@ unregister_taxonomy('wp_todo_board_tag');
 /**
  * deleting Option data
  */
-delete_option( 'wptba_aau' ); //auto approve user setting
+delete_option('wptba_aau'); //auto approve user setting
 delete_option('wptba_autoLogOutDuration'); //auto logout user setting
 delete_option('wptba_encryption_key'); //JWT encryption key 
 delete_option('wptba_logo'); //logo: attachment ID
@@ -78,16 +78,13 @@ delete_option('wptba_logo'); //logo: attachment ID
 /**
  * removing users and role. 
  */
-$allTodoUsers = get_users( array('role'=>'todoer','fields'=>'ID') );
-if($allTodoUsers){
-	foreach($allTodoUsers as $todoUser){
-		wp_delete_user( $todoUser);
+$allTodoUsers = get_users(array('role' => 'todoer', 'fields' => 'ID'));
+if ($allTodoUsers) {
+	foreach ($allTodoUsers as $todoUser) {
+		wp_delete_user($todoUser);
 	}
 }
 
-remove_role( 'todoer' );
+remove_role('todoer');
 
 /**end */
-
-
-
