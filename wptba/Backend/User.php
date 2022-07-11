@@ -22,18 +22,30 @@ class User
 	 */
 	public static function getPendingUsers()
 	{
+		/**
+		 * Verifying Nonce for Backend
+		 */
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
 
+		/**
+		 * Getting user all account requests
+		 */
 		$pendingUsers = 	get_posts(array(
 			'post_type' => 'wp_todo_user',
 			'posts_per_page' => -1
 		));
 
+		/**
+		 * Checking if there are account request(type:post) 
+		 */
 		if (empty($pendingUsers)) {
 			echo json_encode('null');
 			wp_die();
 		}
 
+		/**
+		 * Simplifying account requests and preparing for client side rendering 
+		 */
 		$pendingUsers = array_map(function ($pendingUser) {
 			$pendingUserMeta = get_post_meta($pendingUser->ID, 'wptba_user_post_meta', true);
 
@@ -43,7 +55,15 @@ class User
 				'email' => sanitize_email($pendingUserMeta['userEmail'])
 			);
 		}, $pendingUsers);
+
+		/**
+		 * send the data back 
+		 */
 		echo json_encode($pendingUsers);
+
+		/**
+		 * Terminating script
+		 */
 		wp_die();
 	}
 
@@ -100,21 +120,21 @@ class User
 		unset($user);
 
 		/**
-		 * Cehcking the user already exists or not by its login name(username)
+		 * Checking the user already exists or not by its login name(username)
 		 */
 		$user = get_user_by('login', $userName);
 		if ($user != false) wp_die();
 		unset($user);
 
 		/**
-		 * Genarating a random password for the user
-		 * and storing it in separate variable to use it in the confimation 
+		 * Generating a random password for the user
+		 * and storing it in separate variable to use it in the confirmation 
 		 * Email
 		 */
 		$password = wp_generate_password();
 
 		/**
-		 * Creating User and storing the user ID retured from wp_insert_user,
+		 * Creating User and storing the user ID returned from wp_insert_user,
 		 * in a variable. To use it to store user meta
 		 */
 		$userID = wp_insert_user(array(
@@ -131,12 +151,16 @@ class User
 		if (gettype($userID) != 'integer') wp_die();
 
 		/**
-		 * Creating tag with the user ID
+		 * Creating tag/term with the user ID
+		 * Its needed for post sharing, since post sharing basically 
+		 * tagging a post with tag(name=userid,slug=userid) having same slug and name as user id
 		 */
 		if (is_wp_error(wp_insert_term($userID, 'wp_todo_board_tag'))) return;
 
 		/**
 		 * Adding User Meta
+		 * bio: for future use 
+		 * darkmode: to store darkmode data
 		 */
 		add_user_meta($userID, 'wptba_user_meta', serialize(array(
 			'bio' => '',

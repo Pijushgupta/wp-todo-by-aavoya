@@ -19103,7 +19103,11 @@ var _hoisted_27 = ["onClick"];
 var _hoisted_28 = {
   "class": "border text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 px-2 py-2 mb-1 last:mb-0 rounded cursor-move flex justify-between items-center"
 };
-var _hoisted_29 = ["onDblclick"];
+var _hoisted_29 = {
+  style: {
+    "max-width": "13rem"
+  }
+};
 var _hoisted_30 = ["onClick"];
 
 var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
@@ -19240,16 +19244,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       item: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function (_ref) {
         var element = _ref.element,
             index = _ref.index;
-        return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
-          style: {
-            "max-width": "13rem"
-          },
-          onDblclick: function onDblclick($event) {
-            return _ctx.elementTemp = $data.board[i].data[index];
-          }
-        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(element), 41
-        /* TEXT, PROPS, HYDRATE_EVENTS */
-        , _hoisted_29), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
+        return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(element), 1
+        /* TEXT */
+        ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("svg", {
           xmlns: "http://www.w3.org/2000/svg",
           onClick: function onClick($event) {
             return $options.deleteItem(i, index);
