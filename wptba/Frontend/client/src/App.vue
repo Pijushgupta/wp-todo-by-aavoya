@@ -97,8 +97,13 @@ function logout(){
 	dealUser.value = 0;
 }
 
+const fixWordpressHtmlMargin = () => {
+	document.querySelector('html').style.setProperty('margin-top', '0px', 'important');
+}
+
 onMounted(() => {
 	getlogo();
+	fixWordpressHtmlMargin();
 });
 </script>
 
