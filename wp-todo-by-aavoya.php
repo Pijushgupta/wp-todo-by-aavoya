@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 /**
  * Plugin Name: WP todo by Aavoya
- * Plugin URI: https://www.aavoya.co/wp-todo-by-aavoya
+ * Plugin URI: https://www.aavoya.co/wp-todo
  * Description: Yet another todo plugin with project management features
  * Version: 22.7
  * Requires PHP: 7.3.0
