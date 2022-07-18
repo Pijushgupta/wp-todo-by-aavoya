@@ -151,11 +151,12 @@ class Posts
 	 * option : 'wptba_logo'
 	 * @return void
 	 */
-	public static function getAttchmentId()
+	public static function getAttachmentId()
 	{
 		/**
 		 * Checking if the nonce is valid
 		 */
+
 		if (!wp_verify_nonce($_POST['wptba_backend_nonce'], 'wptba_backend_nonce')) wp_die();
 
 		/**

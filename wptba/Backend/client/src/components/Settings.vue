@@ -195,6 +195,7 @@ function getAttachmentId() {
 	})
 		.then(response => response.json())
 		.then(response => { 
+		
 			if (response == false || response == 'false') {
 				return;
 			}
