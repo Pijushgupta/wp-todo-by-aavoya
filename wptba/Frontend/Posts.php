@@ -300,7 +300,7 @@ class Posts
 	 *
 	 * @return void
 	 */
-	public function addTag()
+	public static function addTag()
 	{
 		if (!wp_verify_nonce($_POST['wptba_nonce'], 'wptba_nonce')) {
 			wp_die();

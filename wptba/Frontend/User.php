@@ -33,8 +33,8 @@ class User
 		add_action('wp_ajax_nopriv_wptbaRegister', array(self::$globalNamespace, 'register'));
 		add_action('wp_ajax_wptbaRegister', array(self::$globalNamespace, 'register'));
 
-		add_action('admin_post_nopriv_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
-		add_action('admin_post_wptba_verify_email', array(self::$globalNamespace, 'wptba_verify_email'));
+		add_action('admin_post_nopriv_wptba_verify_email', array('Wptba\Frontend\User', 'wptba_verify_email'));
+		add_action('admin_post_wptba_verify_email', array('Wptba\Frontend\User', 'wptba_verify_email'));
 
 		add_action('wp_ajax_nopriv_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));
 		add_action('wp_ajax_wptbaChangePassword', array(self::$globalNamespace, 'changePassword'));

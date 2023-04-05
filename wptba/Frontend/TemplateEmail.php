@@ -40,7 +40,7 @@ class TemplateEmail
 		$html .= '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 		$html .= '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		$html .= '<title>' . $title . '</title>';
-		$html .= '<script src="https://cdn.tailwindcss.com"></script>';
+		$html .= '<style>' . sanitize_text_field(self::tailwindcssinline()) . '</style>';
 		$html .= '<link rel="preconnect" href="https://fonts.googleapis.com">';
 		$html .= '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
 		$html .= '<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">';
@@ -61,5 +61,17 @@ class TemplateEmail
 		$html .= '</html>';
 
 		return $html;
+	}
+
+	private static function tailwindcssinline()
+	{
+		$tailwindEmailCssPath =  __DIR__ . DIRECTORY_SEPARATOR .'templateEmail.css';
+
+		if($cssFile = fopen($tailwindEmailCssPath, 'r')){
+			return fread($cssFile, filesize($tailwindEmailCssPath));
+		}else{
+			die('File not Found');
+		} 
+		
 	}
 }
